@@ -1,0 +1,69 @@
+body {
+  background-color: #ffffff76;
+  height: 100vh;
+  margin: 0;
+  width: 100vw;
+  overflow: hidden; /* Prevent body scrolling */
+}
+
+.right-top-panel {
+  background-color: #423d3d;
+  padding: 9px;
+  border-bottom: 1px solid #cccccc00;
+  overflow-x: auto; /* For horizontal scrolling if needed */
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.tab {
+  color: #ddd;
+  margin: 0 5px;
+  border-right: 1px solid #ccc;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  display: inline-block;
+  padding: 8px 12px;
+  text-decoration: none;
+  box-sizing: border-box;
+  width: 100px;
+  text-align: center;
+}
+
+.tab:hover {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+  cursor: pointer;
+} 
+
+.inner-right-column {
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  color: #343a40;
+  overflow-y: auto; /* Enable vertical scrolling */
+  height: calc(100vh - 60px); /* Adjust 60px to account for header height */
+}
+
+.inner-right-column ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  font-size: larger;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse; /* Collapse table borders */
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd; /* Add border to table cells */
+}

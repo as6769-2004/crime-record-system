@@ -1,0 +1,125 @@
+erDiagram
+    CRIME {
+        int crime_id PK
+        string crime_type
+        datetime crime_date
+        string location
+        string description
+        int victim_id FK
+        int suspect_id FK
+        int officer_id FK
+        string status
+        string case_number
+        string jurisdiction
+        string reporting_officer
+        string priority
+        string notes
+        boolean is_reported
+        string incident_report_number
+        string modus_operandi
+        string witness_statements
+        string media_coverage
+        string related_crimes
+        string dispatch_time
+        string arrival_time
+    }
+
+    VICTIM {
+        int victim_id PK
+        string name
+        string address
+        string phone
+        string email
+        string statement
+        datetime date_of_birth
+        string gender
+        string occupation
+        string next_of_kin
+        string relationship_to_suspect
+        string injury_description
+        string insurance_information
+        string preferred_contact_method
+        string language_preference
+        string victim_advocate_assigned
+    }
+
+    SUSPECT {
+        int suspect_id PK
+        string name
+        string address
+        string phone
+        string description
+        string criminal_history
+        datetime date_of_birth
+        string gender
+        string occupation
+        string alias
+        string gang_affiliation
+        string physical_characteristics
+        string known_associates
+        string vehicle_information
+        string arrest_record
+        string DNA_profile
+    }
+
+    OFFICER {
+        int officer_id PK
+        string name
+        string badge_number
+        string rank
+        string precinct
+        string phone
+        string assigned_tasks
+        datetime date_of_hire
+        string specialization
+        string current_status
+        string email
+        string training_records
+        string performance_reviews
+        string disciplinary_actions
+        string emergency_contact
+        string languages_spoken
+    }
+
+    INVESTIGATION {
+        int investigation_id PK
+        int crime_id FK
+        int officer_id FK
+        datetime start_date
+        datetime end_date
+        string progress
+        string report
+        string lead_investigator
+        string assigned_detectives
+        string investigation_type
+        string search_warrants
+        string surveillance_information
+        string interrogation_records
+        string forensic_analysis_requests
+        string case_review_dates
+    }
+
+    EVIDENCE {
+        int evidence_id PK
+        int crime_id FK
+        string description
+        string location_found
+        datetime date_collected
+        string custodian
+        string chain_of_custody
+        string evidence_type
+        string lab_results
+        string storage_location
+        string photo_documentation
+        string video_documentation
+        string digital_signature
+        string packaging_details
+        string court_admissibility
+    }
+
+    CRIME ||--o{ VICTIM : "involves"
+    CRIME ||--o{ SUSPECT : "involves"
+    CRIME ||--o{ OFFICER : "assigned"
+    CRIME ||--o{ INVESTIGATION : "triggers"
+    CRIME ||--o{ EVIDENCE : "contains"
+    INVESTIGATION ||--o{ OFFICER : "assigned"
