@@ -2,47 +2,47 @@
 include 'headerfront.php';
 include('../../includes/db_connect.php');
 
-session_start(); // Start the session at the very beginning
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = trim($_POST['username']);
     $password = trim($_POST['password']);
-    $policestation = $_POST['policestation'];
+    $station_id = $_POST['police_station'];
 
-    if (empty($policestation)) {
+    if (empty($station_id)) {
         $error = "Please select a police station.";
     } else {
-        $stmt = $conn->prepare("SELECT * FROM LoginInfo WHERE User_Name = ? AND Station_ID = ?");
+        $stmt = $conn->prepare("SELECT li.*, o.name AS officer_name, ps.station_name, o.officer_id FROM LOGIN_INFO li
+                                INNER JOIN OFFICER o ON li.officer_id = o.officer_id
+                                INNER JOIN POLICE_STATION ps ON o.station_id = ps.station_id
+                                WHERE li.username = ? AND o.station_id = ? AND li.password = ?");
 
         if (!$stmt) {
             die("SQL Error: " . $conn->error);
         }
 
-        $stmt->bind_param("si", $username, $policestation);
+        $stmt->bind_param("sis", $username, $station_id, $password);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
 
-            if (password_verify($password, $user['Password'])) {
-                $_SESSION['Station_ID'] = $user['Station_ID'];
-                $_SESSION['username'] = $user['User_Name'];
-                $_SESSION['Name'] = $user['Name'];
+            if ($password === $user['password']) {
+                $_SESSION['station_id'] = $user['station_id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['officer_name'] = $user['officer_name'];
+                $_SESSION['station_name'] = $user['station_name'];
+                $_SESSION['officer_id'] = $user['officer_id'];
 
-                // Fetch and store station name in session
-                $stmt_station = $conn->prepare("SELECT Name FROM PoliceStation WHERE Station_ID = ?");
-                $stmt_station->bind_param("i", $user['Station_ID']);
-                $stmt_station->execute();
-                $result_station = $stmt_station->get_result();
+                // Update last login
+                $updateStmt = $conn->prepare("UPDATE LOGIN_INFO SET last_login = NOW() WHERE login_id = ?");
+                $updateStmt->bind_param("i", $user['login_id']);
+                $updateStmt->execute();
+                $updateStmt->close();
 
-                if ($result_station->num_rows > 0) {
-                    $station = $result_station->fetch_assoc();
-                    $_SESSION['Station_Name'] = $station['Name'];
-                }
-                $stmt_station->close();
-
-                header('Location: ../main/main.php');
+                // Redirect with station name and officer ID in the URL
+                header('Location: ../main/main.php?station_name=' . urlencode($user['station_name']) . '&officer_id=' . $user['officer_id']);
                 exit;
             } else {
                 $error = "Invalid username or password.";
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$query = "SELECT Station_ID, Name FROM PoliceStation";
+$query = "SELECT station_id, station_name FROM POLICE_STATION";
 $result = $conn->query($query);
 
 if (!$result) {
@@ -77,11 +77,11 @@ if (!$result) {
     <div class="login-form">
         <form action="login.php" method="POST">
             <label for="police-station">Select the Police Station:</label>
-            <select name="policestation" id="police-station" required>
+            <select name="police_station" id="police-station" required>
                 <option value="">--Select Police Station--</option>
                 <?php
                 while ($row = $result->fetch_assoc()) {
-                    echo "<option value='" . $row['Station_ID'] . "'>" . $row['Name'] . "</option>";
+                    echo "<option value='" . $row['station_id'] . "'>" . $row['station_name'] . "</option>";
                 }
                 ?>
             </select><br>

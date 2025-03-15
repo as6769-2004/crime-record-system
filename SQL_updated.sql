@@ -1,6 +1,5 @@
 CREATE SCHEMA crime_system_working;
 USE crime_system_working;
-
 -- POLICE_STATION Table
 CREATE TABLE POLICE_STATION (
     station_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -12,7 +11,6 @@ CREATE TABLE POLICE_STATION (
     email VARCHAR(255),
     head_officer_id INT
 );
-
 -- OFFICER Table
 CREATE TABLE OFFICER (
     officer_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -22,9 +20,9 @@ CREATE TABLE OFFICER (
     phone VARCHAR(20),
     date_of_hire DATE NOT NULL,
     email VARCHAR(255) UNIQUE,
-    FOREIGN KEY (station_id) REFERENCES POLICE_STATION(station_id) ON DELETE SET NULL
+    officer_pic VARCHAR(225,) FOREIGN KEY (station_id) REFERENCES POLICE_STATION(station_id) ON DELETE
+    SET NULL
 );
-
 -- VICTIM Table
 CREATE TABLE VICTIM (
     victim_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -33,9 +31,9 @@ CREATE TABLE VICTIM (
     phone VARCHAR(20),
     email VARCHAR(255) UNIQUE,
     date_of_birth DATE,
-    gender VARCHAR(20)
+    gender VARCHAR(20),
+    victim_pic VARCHAR(225,)
 );
-
 -- SUSPECT Table
 CREATE TABLE SUSPECT (
     suspect_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -43,9 +41,9 @@ CREATE TABLE SUSPECT (
     address VARCHAR(255),
     phone VARCHAR(20),
     date_of_birth DATE,
-    gender VARCHAR(20)
+    gender VARCHAR(20),
+    suspect_pic VARCHAR(225,)
 );
-
 -- CRIME Table
 CREATE TABLE CRIME (
     crime_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -58,11 +56,13 @@ CREATE TABLE CRIME (
     officer_id INT,
     status VARCHAR(50) NOT NULL,
     case_number VARCHAR(50) UNIQUE NOT NULL,
-    FOREIGN KEY (victim_id) REFERENCES VICTIM(victim_id) ON DELETE SET NULL,
-    FOREIGN KEY (suspect_id) REFERENCES SUSPECT(suspect_id) ON DELETE SET NULL,
-    FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE SET NULL
+    FOREIGN KEY (victim_id) REFERENCES VICTIM(victim_id) ON DELETE
+    SET NULL,
+        FOREIGN KEY (suspect_id) REFERENCES SUSPECT(suspect_id) ON DELETE
+    SET NULL,
+        FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE
+    SET NULL
 );
-
 -- LOGIN_INFO Table
 CREATE TABLE LOGIN_INFO (
     login_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -73,7 +73,6 @@ CREATE TABLE LOGIN_INFO (
     account_status VARCHAR(50),
     FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE CASCADE
 );
-
 -- CASE_LOGS Table
 CREATE TABLE CASE_LOGS (
     log_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -82,9 +81,9 @@ CREATE TABLE CASE_LOGS (
     log_entry TEXT NOT NULL,
     officer_id INT,
     FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE,
-    FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE SET NULL
+    FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE
+    SET NULL
 );
-
 -- CRIME_RECORDS Table
 CREATE TABLE CRIME_RECORDS (
     record_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -94,7 +93,6 @@ CREATE TABLE CRIME_RECORDS (
     status VARCHAR(50),
     FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
 );
-
 -- WITNESS Table
 CREATE TABLE WITNESS (
     witness_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -105,9 +103,9 @@ CREATE TABLE WITNESS (
     date_of_birth DATE,
     gender VARCHAR(20),
     crime_id INT,
+    witness_pic VARCHAR(225,),
     FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
 );
-
 -- EVIDENCE Table
 CREATE TABLE EVIDENCE (
     evidence_id INT PRIMARY KEY AUTO_INCREMENT,

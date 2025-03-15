@@ -1,145 +1,35 @@
 body {
-  background-color: #f0f0f05b;
-  height: 100vh;
-  margin: 0;
-  width: 100vw;
-  overflow: hidden; /* Prevent body scrolling */
+  font-family: sans-serif;
+  margin: 20px;
+  background-color: #12121267; /* Dark background */
+  color: #e0e0e0; /* Light text color for body */
+  line-height: 1.6;
 }
 
-.right-top-panel {
-  background-color: #f0f0f05b;
-  padding: 9px;
-  border-bottom: 1px solid #cccccc00;
-  overflow-x: auto; /* For horizontal scrolling if needed */
-  white-space: nowrap;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.tab {
-  color: #782828;
-  margin: 0 5px;
-  border-right: 1px solid #ccc;
-  border-radius: 5px;
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-  display: inline-block;
-  padding: 8px 12px;
-  text-decoration: none;
-  box-sizing: border-box;
-  width: 100px;
-  text-align: center;
-}
-
-.tab:hover {
+h1 {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
-  cursor: pointer;
-}
-.inner-right-column {
-  flex: 1; /* Allow content to take up available space */
-  padding: 10px; /* Padding inside the element */
-  background-color: rgba(255, 255, 255, 0.571);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  overflow-y: auto; /* Make content scrollable if needed */
-  max-width: 100%; /* Limit width for larger screens */
-  height: '100vh';
-  margin: 10px; /* Margin outside the element */
-  border-radius: 8px; /* Rounded corners for content area */
-}
-
-.inner-right-column ul {
-  list-style-type: none; /* Remove bullet points */
-  padding: 0;
-}
-
-.inner-right-column li {
-  margin-bottom: 10px;
-  border-bottom: 1px solid #eee; /* Add separator lines between items */
-  padding-bottom: 10px;
-}
-
-.inner-right-column strong {
-  font-weight: bold;
-  margin-right: 5px;
-}
-
-.google-maps-icon {
-  width: 30px;
-  /* Adjust size */
-  height: 30px;
-  /* Add some space */
-  vertical-align: middle;
-  /* Align with text */
-}
-
-.profile-card {
-  border: 1px solid #ccc;
-  padding: 30px; /* Increased padding */
-  border-radius: 12px; /* Slightly larger border radius */
-  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.15); /* More prominent shadow */
-  background-color: #f8f8f8; /* Slightly darker background */
-  width: 90%; /* Occupy more of the container width */
-  max-width: 900px; /* Set a maximum width */
-  margin: 20px auto; /* Center the card */
-}
-
-.profile-card h2 {
   text-align: center;
-  margin-bottom: 30px; /* Increased margin */
-  color: #222; /* Darker heading color */
-  font-size: 1.8em; /* Slightly larger font size */
+  margin-bottom: 20px;
 }
 
-.profile-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
-  gap: 15px; /* Increased gap */
-}
-
-.info-group {
+p {
   margin-bottom: 15px;
+  background-color: #2121219b; /* Darker paragraph background */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3); /* Darker shadow */
+  border: 1px solid #333; /* Darker border */
 }
 
-.info-group label {
-  font-weight: bold;
-  margin-right: 8px;
-  font-size: 1.1em; /* Slightly larger label font */
+strong {
+  font-weight: 600;
+  color: #64b5f6; /* Lighter blue color */
 }
 
-.info-group span {
-  font-size: 1.1em; /* Slightly larger span font */
-}
-
-.google-maps-icon {
-  width: 24px; /* Slightly larger icon */
-  height: 24px;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-
-/* Responsive adjustments (example) */
-@media (max-width: 768px) { /* Adjust breakpoint as needed */
-  .profile-card {
-      padding: 20px; /* Reduce padding on smaller screens */
-  }
-
-  .profile-card h2 {
-      font-size: 1.5em; /* Reduce heading size */
-      margin-bottom: 20px;
-  }
-
-  .info-group label,
-  .info-group span {
-      font-size: 1em; /* Reduce font size on smaller screens */
-  }
-
-  .google-maps-icon {
-      width: 20px; /* Reset icon size */
-      height: 20px;
-  }
+p:last-child {
+  background-color: #311b92; /* Dark purple background */
+  color: #b39ddb; /* Lighter purple text */
+  border: 1px solid #5e35b1; /* Darker purple border */
+  text-align: center;
+  font-style: italic;
 }

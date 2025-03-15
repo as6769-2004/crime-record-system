@@ -17,6 +17,14 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
+.h2 { /* Targeting the heading within .login-form */
+    font-size: 2em; /* Adjust font size as needed */
+    margin-bottom: 20px; /* Add some space below the heading */
+    text-transform: uppercase; /* Optional: Uppercase the heading */
+    letter-spacing: 1px; /* Optional: Add letter spacing */
+    color: #ff5722; /* Optional: Change heading color */
+}
+
 input, select {
   width: 100%;
   padding: 10px;
