@@ -71,7 +71,8 @@ CREATE TABLE LOGIN_INFO (
     password VARCHAR(255) NOT NULL,
     last_login DATETIME,
     account_status VARCHAR(50),
-    FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE CASCADE
+    FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE
+    SET NULL
 );
 -- CASE_LOGS Table
 CREATE TABLE CASE_LOGS (
@@ -80,8 +81,9 @@ CREATE TABLE CASE_LOGS (
     log_date DATETIME NOT NULL,
     log_entry TEXT NOT NULL,
     officer_id INT,
-    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE,
-    FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE
+    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE
+    SET NULL,
+        FOREIGN KEY (officer_id) REFERENCES OFFICER(officer_id) ON DELETE
     SET NULL
 );
 -- CRIME_RECORDS Table
@@ -91,7 +93,7 @@ CREATE TABLE CRIME_RECORDS (
     record_date DATETIME NOT NULL,
     summary TEXT,
     status VARCHAR(50),
-    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
+    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE SET NULL
 );
 -- WITNESS Table
 CREATE TABLE WITNESS (
@@ -104,7 +106,7 @@ CREATE TABLE WITNESS (
     gender VARCHAR(20),
     crime_id INT,
     witness_pic VARCHAR(225,),
-    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
+    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE SET NULL
 );
 -- EVIDENCE Table
 CREATE TABLE EVIDENCE (
@@ -113,5 +115,5 @@ CREATE TABLE EVIDENCE (
     description TEXT NOT NULL,
     location_found VARCHAR(255),
     date_collected DATETIME NOT NULL,
-    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
+    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE SET NULL
 );
