@@ -202,11 +202,11 @@ VALUES
 -- CRIME_RECORDS
 INSERT INTO CRIME_RECORDS (crime_id, record_date, summary, status)
 VALUES
-(1, '2024-03-16 15:00:00', 'Crime scene inspected and photographed.', 'Ongoing'),
-(2, '2024-02-23 12:00:00', 'Medical report of victim received.', 'Pending'),
-(3, '2024-01-12 10:00:00', 'Suspect arrested and questioned.', 'Closed'),
-(4, '2024-03-03 18:00:00', 'Cyber security team notified.', 'Ongoing'),
-(5, '2024-03-22 11:30:00', 'Vehicle traced to nearby district.', 'Closed');
+(1, '2024-03-16 15:00:00', 'Crime scene inspected and photographed.', 'Active'),
+(2, '2024-02-23 12:00:00', 'Medical report of victim received.', 'Inactive'),
+(3, '2024-01-12 10:00:00', 'Suspect arrested and questioned.', 'Active'),
+(4, '2024-03-03 18:00:00', 'Cyber security team notified.', 'Active'),
+(5, '2024-03-22 11:30:00', 'Vehicle traced to nearby district.', 'Active');
 
 -- WITNESS
 INSERT INTO WITNESS (name, address, phone, email, date_of_birth, gender, crime_id, witness_pic)

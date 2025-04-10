@@ -1,50 +1,81 @@
 html,
 body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #000000c0;
-    color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #0000007b;
+  color: #ffffff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-    box-sizing: border-box;
-    position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column; /* column for vertical stacking */
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 20px;
+  box-sizing: border-box;
+  gap: 20px;
 }
 
+.top-section {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Action buttons aligned inline */
+.action-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+/* Main content with form and table side-by-side */
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 100%;
+}
+
+#witnessForm,
+.table {
+  flex: 1;
+  min-width: 400px;
+}
+
+/* Headings */
 h2 {
-    text-align: center;
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
+/* Form styles */
 form {
-    display: grid;
-    grid-gap: 15px;
-    width: 90%;
-    max-width: 800px; /* Increased max-width */
-    padding: 20px;
-    background-color: #2a2a2a;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  display: grid;
+  grid-gap: 15px;
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 5px;
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
 input[type="text"],
@@ -52,76 +83,84 @@ input[type="date"],
 input[type="email"],
 input[type="number"],
 select {
-    width: calc(100% - 22px);
-    padding: 12px;
-    border: 1px solid #444;
-    background-color: #333;
-    color: #eee;
-    border-radius: 6px;
-    font-size: 16px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #444;
+  background-color: #333;
+  color: #eee;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
 }
 
 button {
-    background-color: #64b5f6;
-    color: #121212;
-    padding: 14px 25px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+  background-color: #64b5f6;
+  color: #121212;
+  padding: 14px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #396eff;
+  background-color: #396eff;
 }
 
+/* Table styles */
 table {
-    width: 90%;
-    max-width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    border-radius: 8px;
-    overflow: hidden;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th,
 td {
-    padding: 14px 18px;
-    text-align: left;
-    border-bottom: 1px solid #444;
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #444;
 }
 
 th {
-    background-color: #333;
-    font-weight: 600;
+  background-color: #333;
+  font-weight: 600;
 }
 
 tbody tr:hover {
-    background-color: #383838;
+  background-color: #383838;
 }
 
+/* Hide form by default */
 #witnessForm {
   display: none;
-  width: 90%; /* take up most of the page */
-  max-width: 800px; /* match the form width */
-  margin: 20px auto; /* Add top/bottom margin and center horizontally */
-}
-
-#addWitnessButton {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-}
-
-#refreshButton {
-    position: absolute;
-    left: 150px;
-    top: 20px;
 }
 
 #content {
-    width: 100%;
-    overflow-x: auto;
+  width: 100%;
+  overflow-x: auto;
 }
+
+#imagePreview {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#imagePreview img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #000;
+}
+

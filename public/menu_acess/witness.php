@@ -110,96 +110,108 @@ $conn->close();
 </head>
 
 <body>
+
     <div class="container">
-        <button id="addWitnessButton">Add Witness</button>
-        <button id="refreshButton" onclick="location.reload()">Refresh Witnesses</button>
-
-        <div id="witnessForm">
-            <h2>Add Witness</h2>
-            <form method="post" enctype="multipart/form-data">
-                <label for="name">Name:</label>
-                <input type="text" name="name" required>
-
-                <label for="address">Address:</label>
-                <input type="text" name="address">
-
-                <label for="phone">Phone:</label>
-                <input type="text" name="phone">
-
-                <label for="email">Email:</label>
-                <input type="email" name="email">
-
-                <label for="dob">Date of Birth:</label>
-                <input type="date" name="dob">
-
-                <label for="gender">Gender:</label>
-                <select name="gender">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-
-                <label for="crime_id">Crime ID:</label>
-                <input type="number" name="crime_id" required>
-
-                <label for="witness_pic">Witness Picture:</label>
-                <input type="file" name="witness_pic" accept="image/*">
-
-                <button type="submit" name="add_witness">Add Witness</button>
-            </form>
+        <!-- Top Section: Heading and Buttons -->
+        <div class="top-section">
+            <h2>View Witnesses</h2>
+            <div class="action-buttons">
+                <button id="addWitnessButton">Add Witness</button>
+                <button id="refreshButton">Refresh Witnesses</button>
+            </div>
         </div>
+        <div class="main-content">
+            <div id="witnessForm">
+                <h2>Add Witness</h2>
+                <form method="post" enctype="multipart/form-data">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" required>
 
-        <h2>View Witnesses</h2>
-        <?php if (!empty($witnesses)) : ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Date of Birth</th>
-                        <th>Gender</th>
-                        <th>Crime ID</th>
-                        <th>Picture</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($witnesses as $witness) : ?>
-                        <tr>
-                            <td><?php echo $witness['witness_id']; ?></td>
-                            <td><?php echo $witness['name']; ?></td>
-                            <td><?php echo $witness['address']; ?></td>
-                            <td><?php echo $witness['phone']; ?></td>
-                            <td><?php echo $witness['email']; ?></td>
-                            <td><?php echo $witness['date_of_birth']; ?></td>
-                            <td><?php echo $witness['gender']; ?></td>
-                            <td><?php echo $witness['crime_id']; ?></td>
-                            <td>
-                                <?php if (!empty($witness['witness_pic'])) : ?>
-                                    <img src="../../assets/pictures/<?php echo $witness['witness_pic']; ?>" alt="Witness Picture" style="max-width: 100px; max-height: 100px; cursor: pointer;" onclick="previewImage('../../assets/pictures/<?php echo $witness['witness_pic']; ?>')">
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else : ?>
-            <p>No witnesses found.</p>
-        <?php endif; ?>
+                    <label for="address">Address:</label>
+                    <input type="text" name="address">
+
+                    <label for="phone">Phone:</label>
+                    <input type="text" name="phone">
+
+                    <label for="email">Email:</label>
+                    <input type="email" name="email">
+
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" name="dob">
+
+                    <label for="gender">Gender:</label>
+                    <select name="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="crime_id">Crime ID:</label>
+                    <input type="number" name="crime_id" required>
+
+                    <label for="witness_pic">Witness Picture:</label>
+                    <input type="file" name="witness_pic" accept="image/*">
+
+                    <button type="submit" name="add_witness">Add Witness</button>
+                </form>
+            </div>
+
+            <!-- Witness Table -->
+            <div class="table">
+                <?php if (!empty($witnesses)) : ?>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Date of Birth</th>
+                                <th>Gender</th>
+                                <th>Crime ID</th>
+                                <th>Picture</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($witnesses as $witness) : ?>
+                                <tr>
+                                    <td><?php echo $witness['witness_id']; ?></td>
+                                    <td><?php echo $witness['name']; ?></td>
+                                    <td><?php echo $witness['address']; ?></td>
+                                    <td><?php echo $witness['phone']; ?></td>
+                                    <td><?php echo $witness['email']; ?></td>
+                                    <td><?php echo $witness['date_of_birth']; ?></td>
+                                    <td><?php echo $witness['gender']; ?></td>
+                                    <td><?php echo $witness['crime_id']; ?></td>
+                                    <td>
+                                        <?php if (!empty($witness['witness_pic'])) : ?>
+                                            <img src="../../assets/pictures/<?php echo $witness['witness_pic']; ?>"
+                                                alt="Witness Picture"
+                                                style="max-width: 100px; max-height: 100px; cursor: pointer;"
+                                                onclick="previewImage('../../assets/pictures/<?php echo $witness['witness_pic']; ?>')">
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else : ?>
+                    <p>No witnesses found.</p>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
+
+    <!-- Image Preview Modal -->
     <div id="imagePreview">
         <img id="previewImage" src="" alt="Preview">
     </div>
+
     <script>
         document.getElementById('addWitnessButton').addEventListener('click', function() {
             var form = document.getElementById('witnessForm');
-            if (form.style.display === 'none') {
-                form.style.display = 'block';
-            } else {
-                form.style.display = 'none';
-            }
+            form.style.display = (form.style.display === 'none') ? 'block' : 'none';
         });
 
         function previewImage(imageSrc) {
@@ -210,7 +222,13 @@ $conn->close();
         document.getElementById('imagePreview').addEventListener('click', function() {
             this.style.display = 'none';
         });
+
+        // Optional: Handle Add Victim (e.g., toggle victim form)
+        // document.getElementById('addVictimButton').addEventListener('click', function() {
+        //     alert("Redirecting to Add Victim page or toggling victim form."); // You can replace with actual logic
+        // });
     </script>
 </body>
+
 
 </html>

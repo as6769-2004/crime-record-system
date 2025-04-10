@@ -14,7 +14,7 @@ if (!$result) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $officer_id = $_POST['officer'];
     $username = trim($_POST['username']);
-    $password = password_hash(trim($_POST['password']), PASSWORD_DEFAULT); // Hash the password
+    $password = $_POST['password']; 
 
     // Prepare SQL statement to insert new user
     $stmt = $conn->prepare("INSERT INTO LOGIN_INFO (officer_id, username, password) VALUES (?, ?, ?)");

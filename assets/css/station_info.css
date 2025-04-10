@@ -27,7 +27,7 @@ strong {
 }
 
 p:last-child {
-  background-color: #311b92; /* Dark purple background */
+  background-color: #f73a3a; /* Dark purple background */
   color: #b39ddb; /* Lighter purple text */
   border: 1px solid #5e35b1; /* Darker purple border */
   text-align: center;

@@ -128,7 +128,7 @@ $conn->close();
 </head>
 
 <body>
-    <div class="inner-right-column">
+    <div class="container">
         <div>
             <h2>Add Crime Record</h2>
             <?php if (isset($message)) {
