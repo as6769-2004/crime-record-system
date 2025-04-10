@@ -48,6 +48,7 @@ body {
   width: 100%;
 }
 
+
 .table {
   flex: 1;
   min-width: 400px;
@@ -59,7 +60,7 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* Form styles */
+/* Form Styles */
 form {
   display: grid;
   grid-gap: 15px;
@@ -77,10 +78,10 @@ label {
   margin-bottom: 5px;
 }
 
+
 input[type="text"],
 input[type="date"],
 input[type="email"],
-input[type="number"],
 select {
   width: calc(100% - 22px);
   padding: 12px;
@@ -97,6 +98,7 @@ input[type="file"] {
   color: #ccc;
 }
 
+/* Buttons */
 button {
   background-color: #64b5f6;
   color: #121212;
@@ -109,10 +111,11 @@ button {
 }
 
 button:hover {
-  background-color: #396eff;
+  background-color: #385ab8;
 }
 
-/* Table styles */
+/* Table Styles */
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -138,13 +141,15 @@ tbody tr:hover {
   background-color: #383838;
 }
 
-/* Hide form by default */
-#witnessForm {
+/* suspect Form Toggle */
+#suspectForm {
   display: none;
   width: 90%;
   max-width: 800px;
   margin: 20px auto;
 }
+
+/* Image Preview */
 #imagePreview {
   display: none;
   position: fixed;

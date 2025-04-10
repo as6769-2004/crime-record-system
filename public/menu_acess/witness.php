@@ -222,11 +222,6 @@ $conn->close();
         document.getElementById('imagePreview').addEventListener('click', function() {
             this.style.display = 'none';
         });
-
-        // Optional: Handle Add Victim (e.g., toggle victim form)
-        // document.getElementById('addVictimButton').addEventListener('click', function() {
-        //     alert("Redirecting to Add Victim page or toggling victim form."); // You can replace with actual logic
-        // });
     </script>
 </body>
 
