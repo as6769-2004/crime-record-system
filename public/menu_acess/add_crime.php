@@ -23,7 +23,7 @@ if (preg_match('/CN(\d+)/', $last_case, $matches)) {
     $number = intval($matches[1]) + 1;
     $next_case_number = 'CN' . str_pad($number, 4, '0', STR_PAD_LEFT);
 } else {
-    $next_case_number = 'CN0001';
+    $next_case_number = $last_case;
 }
 
 
@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $case_number = $_POST["case_number"];
 
     $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, victim_id, suspect_id, officer_id, status, case_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt_insert->bind_param("ssssiiiis", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number);
+    $stmt_insert->bind_param("ssssiiiss", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number);
 
     if ($stmt_insert->execute()) {
         $crime_id = $conn->insert_id;
@@ -173,8 +173,9 @@ $conn->close();
 
                 <label for="status">Status:</label><br>
                 <select id="status" name="status" required>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option value="open">Active</option>
+                    <option value="under investigation">Ongoing</option>
+                    <option value="closed">Closed</option>
                 </select><br><br>
 
                 <label for="case_number">Case Number:</label><br>

@@ -46,7 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-    <h2>Officer Account Registration</h2>
 
     <div class="login-form">
         <form action="signup.php" method="POST">

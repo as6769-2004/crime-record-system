@@ -115,7 +115,7 @@ $conn->close();
         <h2>View Victims</h2>
         <div class="action-buttons">
             <button id="addVictimButton">Add Victim</button>
-            <button id="refreshButton" onclick="location.reload()">Refresh Victims</button>
+            <button id="refreshButton" onclick="window.location.href='victim.php'">Refresh</button>
         </div>
     </div>
 

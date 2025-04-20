@@ -117,7 +117,7 @@ $conn->close();
             <h2>View Witnesses</h2>
             <div class="action-buttons">
                 <button id="addWitnessButton">Add Witness</button>
-                <button id="refreshButton">Refresh Witnesses</button>
+                <button id="refreshButton" onclick="window.location.href='witness.php'">Refresh</button>
             </div>
         </div>
         <div class="main-content">
@@ -141,9 +141,9 @@ $conn->close();
 
                     <label for="gender">Gender:</label>
                     <select name="gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
                     </select>
 
                     <label for="crime_id">Crime ID:</label>
@@ -182,7 +182,7 @@ $conn->close();
                                     <td><?php echo $witness['phone']; ?></td>
                                     <td><?php echo $witness['email']; ?></td>
                                     <td><?php echo $witness['date_of_birth']; ?></td>
-                                    <td><?php echo $witness['gender']; ?></td>
+                                    <td><?php echo ucfirst($witness['gender']); ?></td>
                                     <td><?php echo $witness['crime_id']; ?></td>
                                     <td>
                                         <?php if (!empty($witness['witness_pic'])) : ?>
@@ -224,6 +224,5 @@ $conn->close();
         });
     </script>
 </body>
-
 
 </html>

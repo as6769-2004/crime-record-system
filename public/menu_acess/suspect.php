@@ -92,8 +92,8 @@ $conn->close();
         <h2>View Suspects</h2>
         <div class="action-buttons">
             <button id="addSuspectButton">Add Suspect</button>
-            <button id="refreshButton" onclick="location.reload()">Refresh</button>
-        </div>
+            <button id="refreshButton" onclick="window.location.href='suspect.php'">Refresh</button>
+            </div>
     </div>
 
     <div class="main-content">

@@ -6,4 +6,8 @@ $dbname = "crime_system_working"; // Your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
- ?>
+
+
+?>
+
+
