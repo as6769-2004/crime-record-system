@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 INNER JOIN OFFICER o ON li.officer_id = o.officer_id
                                 INNER JOIN POLICE_STATION ps ON o.station_id = ps.station_id
                                 WHERE li.username = ? AND o.station_id = ?");
-        
+
         if (!$stmt) {
             die("SQL Error: " . $conn->error);
         }
@@ -37,9 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     // Account is active - proceed
                     $_SESSION['station_id'] = $user['station_id'];
                     $_SESSION['username'] = $user['username'];
-                    $_SESSION['officer_name'] = $user['officer_name'];
-                    $_SESSION['station_name'] = $user['station_name'];
-                    $_SESSION['officer_id'] = $user['officer_id'];
+                    $_SESSION['officer_id'] = $user['officer_id']; // Only send officer_id and station_id
 
                     // Update last login timestamp
                     $updateStmt = $conn->prepare("UPDATE LOGIN_INFO SET last_login = NOW() WHERE login_id = ?");
@@ -47,8 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $updateStmt->execute();
                     $updateStmt->close();
 
-                    // Redirect
-                    header('Location: ../main/main.php?station_name=' . urlencode($user['station_name']) . '&officer_id=' . $user['officer_id']);
+                    //      // Redirect with only officer_id and station_id
+                    header('Location: ../main/main.php?station_id=' . $user['station_id'] . '&officer_id=' . $user['officer_id']);
                     exit;
                 }
             } else {
@@ -72,12 +70,14 @@ if (!$result) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crime Record System - Login</title>
     <link rel="stylesheet" href="../../assets/css/loginstyle.css">
 </head>
+
 <body>
     <div class="login-form">
         <form action="login.php" method="POST">
@@ -104,4 +104,5 @@ if (!$result) {
         <a href="signup.php">Signup Here</a>
     </div>
 </body>
+
 </html>

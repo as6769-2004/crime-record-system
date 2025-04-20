@@ -1,21 +1,39 @@
 <?php
 include 'headerlogged.php';
 
-// Default values if URL parameters are missing
-$default_station_name = 'Demo For Development';
-$default_officer_id = null;
-$default_officer_name = 'Unknown Officer';
+include '../../includes/db_connect.php';
 
-
-// Get from URL only
-$station_name_url = isset($_GET['station_name']) ? urldecode($_GET['station_name']) : $default_station_name;
+// Get only station_id and officer_id from URL
+$station_id = isset($_GET['station_id']) ? intval($_GET['station_id']) : $default_station_id;
 $officer_id = isset($_GET['officer_id']) ? intval($_GET['officer_id']) : $default_officer_id;
-$officer_name = isset($_GET['officer_name']) ? urldecode($_GET['officer_name']) : $default_officer_name;
 
 // Sanitize for HTML output
-$station_name_safe = htmlspecialchars($station_name_url);
+$station_id_safe = ($station_id !== null) ? intval($station_id) : null;
 $officer_id_safe = ($officer_id !== null) ? intval($officer_id) : null;
-$officer_name_safe = htmlspecialchars($officer_name);
+
+$stmt = $conn->prepare("SELECT station_name FROM POLICE_STATION WHERE station_id = ?");
+$stmt->bind_param("i", $station_id_safe); // Bind the station_id as an integer
+$stmt->execute();
+$result = $stmt->get_result();
+$station_name_safe = "";
+
+if ($row = $result->fetch_assoc()) {
+    $station_name_safe = htmlspecialchars($row['station_name']);
+} else {
+    echo "station_name not found"; // Fallback if no result is found
+}
+
+$stmt = $conn->prepare("SELECT name FROM OFFICER WHERE officer_id = ?");
+$stmt->bind_param("i", $officer_id_safe); // Bind the station_id as an integer
+$stmt->execute();
+$result = $stmt->get_result();
+$name_safe = "";
+
+if ($row = $result->fetch_assoc()) {
+    $name_safe = htmlspecialchars($row['name']);
+} else {
+    echo "name not found"; // Fallback if no result is found
+}
 ?>
 
 <!DOCTYPE html>
@@ -26,20 +44,7 @@ $officer_name_safe = htmlspecialchars($officer_name);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $station_name_safe; ?> - Crime Record System</title>
     <link rel="stylesheet" href="../../assets/css/main.css">
-    <style>
-        #default-content {
-            padding: 20px;
-            text-align: center;
-            font-size: 1.2em;
-        }
 
-        #contentFrame {
-            display: none;
-            width: 100%;
-            height: 600px;
-            border: none;
-        }
-    </style>
 </head>
 
 <body>
@@ -48,21 +53,21 @@ $officer_name_safe = htmlspecialchars($officer_name);
         <div class="left-column">
             <h2><span id="menu-title">Menu</span></h2>
             <ul class="menu">
-                <li><a href="#" data-page="../menu_acess/station_info.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Station Info</a></li>
+                <li><a href="#" data-page="../menu_acess/station_info.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Station Info</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/add_crime.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Add New Crime</a></li>
+                <li><a href="#" data-page="../menu_acess/add_crime.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Add New Crime</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/case_status.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Case Status</a></li>
+                <li><a href="#" data-page="../menu_acess/case_status.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Status</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/case_log.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Case Log</a></li>
+                <li><a href="#" data-page="../menu_acess/case_log.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Log</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/Officers_stations.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Officer</a></li>
+                <li><a href="#" data-page="../menu_acess/Officers_stations.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Officer</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/witness.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Witness</a></li>
+                <li><a href="#" data-page="../menu_acess/witness.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Witness</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/victim.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Victims</a></li>
+                <li><a href="#" data-page="../menu_acess/victim.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Victims</a></li>
                 <hr>
-                <li><a href="#" data-page="../menu_acess/suspect.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&officer_name=<?php echo urlencode($officer_name_safe); ?>">Suspect</a></li>
+                <li><a href="#" data-page="../menu_acess/suspect.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Suspect</a></li>
             </ul>
             <div class="left_bottom">
                 <hr>
@@ -74,7 +79,7 @@ $officer_name_safe = htmlspecialchars($officer_name);
         <div class="right-column">
             <div id="display-container">
                 <div id="default-content">
-                    <?php echo "Welcome to " . $station_name_safe . ", Officer " . $officer_name_safe; ?>
+                    <?php echo "Welcome to " . $station_name_safe . ", Officer " . $name_safe; ?>
 
                     <div id="news-section">
                         <h2>Latest News</h2>

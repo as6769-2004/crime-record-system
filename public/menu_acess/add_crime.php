@@ -2,11 +2,23 @@
 // Include your database connection file
 include '../../includes/db_connect.php';
 
+$created_by = isset($_GET['officer_id']) ? intval($_GET['officer_id']) : 0;
 // Station data (static for now)
-$station_name = "Your Station Name";
-$station_code = "ST001";
-$station_address = "123 Main St, Anytown";
-$station_id = 1;
+echo $created_by;
+$station_name = isset($_GET['station_name']) ? $_GET['station_name'] : 'Default Station';
+$station_id = 0;
+if ($station_id == 0) {
+    $stmt = $conn->prepare("SELECT station_id FROM officer WHERE officer_id = ?");
+    $stmt->bind_param("i", $created_by);
+    $stmt->execute();
+    $stmt->bind_result($fetched_station_id);
+    if ($stmt->fetch()) {
+        $station_id = $fetched_station_id;
+    }
+    $stmt->close();
+}
+
+echo $station_id;
 
 // Fetch last case number
 $last_case_query = "SELECT case_number FROM CRIME ORDER BY crime_id DESC LIMIT 1";
@@ -38,9 +50,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $officer_id = $_POST["officer_id"];
     $status = $_POST["status"];
     $case_number = $_POST["case_number"];
+    $created_by = $_POST["created_by"];
 
-    $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, victim_id, suspect_id, officer_id, status, case_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt_insert->bind_param("ssssiiiss", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number);
+    $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, victim_id, suspect_id, officer_id, status, case_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)");
+    $stmt_insert->bind_param("ssssiiiss", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number, $created_by);
 
     if ($stmt_insert->execute()) {
         $crime_id = $conn->insert_id;

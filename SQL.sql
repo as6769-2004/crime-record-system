@@ -136,3 +136,30 @@ FROM CRIME c
     LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
     LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
 WHERE c.status IN ('open', 'under investigation');
+
+
+
+
+
+
+
+
+-- ===================== VICTIM =====================
+ALTER TABLE VICTIM
+ADD COLUMN created_by INT;
+
+-- ===================== SUSPECT =====================
+ALTER TABLE SUSPECT
+ADD COLUMN created_by INT;
+
+-- ===================== CRIME =====================
+ALTER TABLE CRIME
+ADD COLUMN created_by INT;
+
+-- ===================== WITNESS =====================
+ALTER TABLE WITNESS
+ADD COLUMN created_by INT;
+
+-- ===================== EVIDENCE =====================
+ALTER TABLE EVIDENCE
+ADD COLUMN created_by INT;
