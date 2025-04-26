@@ -42,7 +42,8 @@ CREATE TABLE VICTIM (
     date_of_birth DATE,
     gender ENUM('male', 'female', 'other'),
     victim_pic VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INT
 );
 -- ===================== SUSPECT =====================
 CREATE TABLE SUSPECT (
@@ -54,8 +55,23 @@ CREATE TABLE SUSPECT (
     gender ENUM('male', 'female', 'other'),
     suspect_pic VARCHAR(255),
     known_offender BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INT
 );
+-- ===================== WITNESS =====================
+CREATE TABLE WITNESS (
+    witness_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address TEXT,
+    phone VARCHAR(20),
+    email VARCHAR(255) UNIQUE,
+    date_of_birth DATE,
+    gender ENUM('male', 'female', 'other'),
+    witness_pic VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INT
+);
+
 -- ===================== CRIME =====================
 CREATE TABLE CRIME (
     crime_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,13 +79,24 @@ CREATE TABLE CRIME (
     crime_date DATETIME NOT NULL,
     location TEXT NOT NULL,
     description TEXT,
-    victim_id INT NULL,
-    suspect_id INT NULL,
     officer_id INT NULL,
     status ENUM('open', 'under investigation', 'closed') DEFAULT 'open',
     case_number VARCHAR(50) UNIQUE NOT NULL,
-    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INT
 );
+
+-- ===================== EVIDENCE =====================
+CREATE TABLE EVIDENCE (
+    evidence_id INT AUTO_INCREMENT PRIMARY KEY,
+    crime_id INT NOT NULL,
+    description TEXT NOT NULL,
+    location_found TEXT,
+    date_collected DATETIME NOT NULL,
+    file_url VARCHAR(255),
+    created_by INT 
+);
+
 -- ===================== LOGIN_INFO =====================
 CREATE TABLE LOGIN_INFO (
     login_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -100,66 +127,27 @@ CREATE TABLE CRIME_RECORDS (
     status VARCHAR(50),
     FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
 );
--- ===================== WITNESS =====================
-CREATE TABLE WITNESS (
-    witness_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    address TEXT,
-    phone VARCHAR(20),
-    email VARCHAR(255) UNIQUE,
-    date_of_birth DATE,
-    gender ENUM('male', 'female', 'other'),
-    crime_id INT,
-    witness_pic VARCHAR(255),
-    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE
-    SET NULL
-);
--- ===================== EVIDENCE =====================
-CREATE TABLE EVIDENCE (
-    evidence_id INT AUTO_INCREMENT PRIMARY KEY,
+-- Create crime_victim table for storing relationships between crimes and suspects
+CREATE TABLE crime_victims (
     crime_id INT NOT NULL,
-    description TEXT NOT NULL,
-    location_found TEXT,
-    date_collected DATETIME NOT NULL,
-    file_url VARCHAR(255),
-    FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
+    victim_id INT NOT NULL,
+    PRIMARY KEY (crime_id, victim_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
+    FOREIGN KEY (victim_id) REFERENCES victim(victim_id) ON DELETE CASCADE
 );
--- ===================== VIEW: ACTIVE CASES =====================
--- CREATE OR REPLACE VIEW active_cases AS
--- SELECT c.crime_id,
---     c.case_number,
---     c.crime_type,
---     c.status,
---     v.name AS victim_name,
---     s.name AS suspect_name
--- FROM CRIME c
---     LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
---     LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
--- WHERE c.status IN ('open', 'under investigation');
-
-
-
-
-
-
-
-
--- ===================== VICTIM =====================
-ALTER TABLE VICTIM
-ADD COLUMN created_by INT;
-
--- ===================== SUSPECT =====================
-ALTER TABLE SUSPECT
-ADD COLUMN created_by INT;
-
--- ===================== CRIME =====================
-ALTER TABLE CRIME
-ADD COLUMN created_by INT;
-
--- ===================== WITNESS =====================
-ALTER TABLE WITNESS
-ADD COLUMN created_by INT;
-
--- ===================== EVIDENCE =====================
-ALTER TABLE EVIDENCE
-ADD COLUMN created_by INT;
+-- Create crime_suspects table for storing relationships between crimes and suspects
+CREATE TABLE crime_suspects (
+    crime_id INT NOT NULL,
+    suspect_id INT NOT NULL,
+    PRIMARY KEY (crime_id, suspect_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
+    FOREIGN KEY (suspect_id) REFERENCES suspect(suspect_id) ON DELETE CASCADE
+);
+-- Create crime_witnesses table for storing relationships between crimes and witnesses
+CREATE TABLE crime_witnesses (
+    crime_id INT NOT NULL,
+    witness_id INT NOT NULL,
+    PRIMARY KEY (crime_id, witness_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
+    FOREIGN KEY (witness_id) REFERENCES witness(witness_id) ON DELETE CASCADE
+);

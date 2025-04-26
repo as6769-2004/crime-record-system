@@ -1,10 +1,10 @@
 # Crime Record Management System
-
-**A Comprehensive Solution for Modern Law Enforcement**
+ 
+## **A Comprehensive Solution for Modern Law Enforcement**
 
 The Crime Record Management System is a robust and scalable application designed to streamline and modernize crime data management for police departments and law enforcement agencies. This system provides a centralized platform for efficient record-keeping, case tracking, and information retrieval, enabling officers to effectively manage investigations and improve overall operational efficiency.
 
-**Key Features (Currently Implemented):**
+## **Key Features (Currently Implemented):**
 
 * **Centralized Database:**
     * Stores comprehensive information on police stations, officers, victims, suspects, crimes, witnesses, and evidence.
@@ -27,7 +27,7 @@ The Crime Record Management System is a robust and scalable application designed
 * **Case Logging:**
     * Detailed logging of case progress, including officer notes and actions taken.
 
-**Features (Updating Soon):**
+## **Features (Updating Soon):**
 
 * **Enhanced Database Optimization:**
     * Database indexing and query optimization for improved performance.
@@ -66,7 +66,7 @@ The Crime Record Management System is a robust and scalable application designed
     * Mobile-responsive design for field access.
     * Alerts and notification system.
 
-**Benefits:**
+## **Benefits:**
 
 * **Enhanced Efficiency:** Streamlines data entry and retrieval, reducing administrative workload.
 * **Improved Accuracy:** Minimizes data entry errors and ensures data consistency.
@@ -77,18 +77,18 @@ The Crime Record Management System is a robust and scalable application designed
 * **Enhanced Security:** (Updating Soon) Protects sensitive data with robust security measures.
 * **Improved situational awareness.**
 
-**Database Schema:**
+## **Database Schema:**
 
 (Include the detailed table schema you provided earlier in the README)
 
-**Getting Started:**
+## **Getting Started:**
 
 (Include detailed instructions on how to set up the database and application, including dependencies and configuration.)
 
-**Contributing:**
+## **Contributing:**
 
 (Explain how others can contribute to the project, including coding standards, pull request processes, and communication channels.)
 
-**License:**
+## **License:**
 
 (Specify the license under which the project is distributed.)

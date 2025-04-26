@@ -3,7 +3,6 @@ include '../../includes/db_connect.php';
 
 $created_by = isset($_GET['officer_id']) ? intval($_GET['officer_id']) : 0;
 $station_name = isset($_GET['station_name']) ? $_GET['station_name'] : 'Default Station';
-$station_id = 0;
 
 // Fetch station_id from officer
 $stmt = $conn->prepare("SELECT station_id FROM officer WHERE officer_id = ?");
@@ -32,24 +31,77 @@ if (preg_match('/CN(\d+)/', $last_case, $matches)) {
     $next_case_number = 'CN0001';
 }
 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $crime_type = $_POST["crime_type"];
     $crime_date = $_POST["crime_date"];
     $location = $_POST["location"];
     $description = $_POST["description"];
-    $victim_id = $_POST["victim_id"] ?: NULL;
-    $suspect_id = $_POST["suspect_id"] ?: NULL;
     $officer_id = $_POST["officer_id"];
     $status = $_POST["status"];
     $case_number = $_POST["case_number"];
 
-    $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, victim_id, suspect_id, officer_id, status, case_number, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt_insert->bind_param("ssssiiisss", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number, $created_by);
+    // Selected Victims
+    $selected_victims = isset($_POST['selected_victims']) ? explode(',', $_POST['selected_victims']) : [];
+
+    // Selected Suspects
+    $selected_suspects = isset($_POST['selected_suspects']) ? explode(',', $_POST['selected_suspects']) : [];
+
+    // Selected Witnesses
+    $selected_witnesses = isset($_POST['selected_witnesses']) ? explode(',', $_POST['selected_witnesses']) : [];
+
+
+    // Insert into the CRIME table
+    $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, officer_id, status, case_number, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt_insert->bind_param("ssssisss", $crime_type, $crime_date, $location, $description, $officer_id, $status, $case_number, $created_by);
 
     if ($stmt_insert->execute()) {
         $crime_id = $conn->insert_id;
         $message = "Crime record added successfully.";
 
+        // Add selected victims to the crime_victims table
+        if (!empty($selected_victims)) {
+            $stmt_victim = $conn->prepare("INSERT INTO crime_victims (crime_id, victim_id) VALUES (?, ?)");
+            foreach ($selected_victims as $victim_id) {
+                $victim_id = intval($victim_id);
+                $stmt_victim->bind_param("ii", $crime_id, $victim_id);
+                if (!$stmt_victim->execute()) {
+                    $message .= "<br>Failed to add victim ID " . htmlspecialchars($victim_id);
+                }
+            }
+            $stmt_victim->close();
+        }
+
+
+        // Add selected witnesses to the crime_witnesses table
+        if (!empty($selected_witnesses)) {
+            $stmt_witness = $conn->prepare("INSERT INTO crime_witnesses (crime_id, witness_id) VALUES (?, ?)");
+            foreach ($selected_witnesses as $witness_id) {
+                $witness_id = intval($witness_id);
+                $stmt_witness->bind_param("ii", $crime_id, $witness_id);
+                if (!$stmt_witness->execute()) {
+                    $message .= "<br>Failed to add witness ID " . htmlspecialchars($witness_id);
+                }
+            }
+            $stmt_witness->close();
+        }
+
+
+        // Add selected suspect to the crime_suspects table (if suspect ID exists)
+        if (!empty($selected_suspects)) {
+            $stmt_suspect = $conn->prepare("INSERT INTO crime_suspects (crime_id, suspect_id) VALUES (?, ?)");
+            foreach ($selected_suspects as $suspect_id) {
+                $suspect_id = intval($suspect_id);
+                $stmt_suspect->bind_param("ii", $crime_id, $suspect_id);
+                if (!$stmt_suspect->execute()) {
+                    $message .= "<br>Failed to add suspect ID " . htmlspecialchars($suspect_id);
+                }
+            }
+            $stmt_suspect->close();
+        }
+
+
+        // Handle file uploads (if any)
         $folder_path = "../../assets/cases/crime_" . $crime_id;
         if (!file_exists($folder_path)) {
             mkdir($folder_path, 0755, true);
@@ -87,31 +139,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_insert->close();
 }
 
-// Fetch dropdowns
-$officers = $victims = $suspects = [];
 
+// Fetch dropdowns
+$officers = $victims = $suspects = $witnesses = [];
+
+// Fetch officers
 $stmt = $conn->prepare("SELECT officer_id, name, badge_number FROM OFFICER WHERE station_id = ?");
 $stmt->bind_param("i", $station_id);
 $stmt->execute();
 $result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) $officers[] = $row;
+while ($row = $result->fetch_assoc())
+    $officers[] = $row;
 $stmt->close();
 
+// Fetch victims
 $stmt = $conn->prepare("SELECT victim_id, name FROM VICTIM");
 $stmt->execute();
 $result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) $victims[] = $row;
+while ($row = $result->fetch_assoc())
+    $victims[] = $row;
 $stmt->close();
 
+// Fetch suspects
 $stmt = $conn->prepare("SELECT suspect_id, name FROM SUSPECT");
 $stmt->execute();
 $result = $stmt->get_result();
-while ($row = $result->fetch_assoc()) $suspects[] = $row;
+while ($row = $result->fetch_assoc())
+    $suspects[] = $row;
+$stmt->close();
+
+// Fetch witnesses
+$stmt = $conn->prepare("SELECT witness_id, name FROM WITNESS");
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc())
+    $witnesses[] = $row;
 $stmt->close();
 
 $conn->close();
-?>
-
 ?>
 
 <!DOCTYPE html>
@@ -126,103 +191,225 @@ $conn->close();
 
 <body>
     <div class="container">
-        <div>
-            <h2>Add Crime Record</h2>
-            <?php if (isset($message)) {
-                echo "<p>" . htmlspecialchars($message) . "</p>";
-            } ?>
-            <form method="post" enctype="multipart/form-data">
-                <input type="hidden" name="created_by" value="<?php echo htmlspecialchars($created_by); ?>">
+        <h2>Add Crime Record</h2>
 
-                <label for="crime_type">Crime Type:</label><br>
-                <input type="text" id="crime_type" name="crime_type" required><br><br>
+        <!-- Message display after submission -->
+        <?php if (isset($message)) {
+            echo "<p>" . htmlspecialchars($message) . "</p>";
+        } ?>
 
-                <label for="crime_date">Crime Date:</label><br>
-                <input type="datetime-local" id="crime_date" name="crime_date" required><br><br>
+        <!-- Form to add crime record -->
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="created_by" value="<?php echo htmlspecialchars($created_by); ?>">
 
-                <label for="location">Location:</label><br>
-                <input type="text" id="location" name="location" required><br><br>
+            <!-- Crime Type -->
+            <label for="crime_type">Crime Type:</label><br>
+            <input type="text" id="crime_type" name="crime_type" required><br><br>
 
-                <label for="description">Description:</label><br>
-                <textarea id="description" name="description" required></textarea><br><br>
+            <!-- Crime Date -->
+            <label for="crime_date">Crime Date:</label><br>
+            <input type="datetime-local" id="crime_date" name="crime_date" required><br><br>
 
-                <label for="victim_id">Victim:</label><br>
-                <select id="victim_id" name="victim_id">
-                    <option value="">Select Victim</option>
-                    <?php foreach ($victims as $victim) { ?>
-                        <option value="<?php echo htmlspecialchars($victim['victim_id']); ?>"><?php echo htmlspecialchars($victim['name']); ?></option>
-                    <?php } ?>
-                </select><br><br>
+            <!-- Location -->
+            <label for="location">Location:</label><br>
+            <input type="text" id="location" name="location" required><br><br>
 
-                <label for="suspect_id">Suspect:</label><br>
-                <select id="suspect_id" name="suspect_id">
-                    <option value="">Select Suspect</option>
-                    <?php foreach ($suspects as $suspect) { ?>
-                        <option value="<?php echo htmlspecialchars($suspect['suspect_id']); ?>"><?php echo htmlspecialchars($suspect['name']); ?></option>
-                    <?php } ?>
-                </select><br><br>
+            <!-- Description -->
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" required></textarea><br><br>
 
-                <label for="officer_id">Officer:</label><br>
-                <select id="officer_id" name="officer_id" required>
-                    <option value="">Select Officer</option>
-                    <?php foreach ($officers as $officer) { ?>
-                        <option value="<?php echo htmlspecialchars($officer['officer_id']); ?>"><?php echo htmlspecialchars($officer['name']); ?> (Badge: <?php echo htmlspecialchars($officer['badge_number']); ?>)</option>
-                    <?php } ?>
-                </select><br><br>
+            <!-- Victim Selection -->
+            <label for="victimDropdown">Select Victim:</label><br>
+            <select id="victimDropdown">
+                <option value="">Select Victim</option>
+                <?php foreach ($victims as $victim) { ?>
+                    <option value="<?php echo htmlspecialchars($victim['victim_id']); ?>">
+                        <?php echo htmlspecialchars($victim['name']); ?>
+                    </option>
+                <?php } ?>
+            </select>
+            <button type="button" onclick="addVictim()">Add Victim</button><br><br>
 
-                <label for="status">Status:</label><br>
-                <select id="status" name="status" required>
-                    <option value="open">Active</option>
-                    <option value="under investigation">Ongoing</option>
-                    <option value="closed">Closed</option>
-                </select><br><br>
+            <!-- List of Selected Victims -->
+            <h4>Selected Victims:</h4>
+            <ul id="selectedVictimsList"></ul>
 
-                <label for="case_number">Case Number:</label><br>
-                <input type="text" id="case_number" name="case_number" value="<?php echo $next_case_number; ?>" readonly required><br><br>
+            <!-- Hidden input to store selected victim IDs -->
+            <input type="hidden" name="selected_victims" id="selected_victims">
 
-                <label for="images">Upload Images:</label><br>
-                <input type="file" name="images[]" multiple><br><br>
+            <!-- Suspect Selection -->
+            <label for="suspectDropdown">Select Suspect:</label><br>
+            <select id="suspectDropdown">
+                <option value="">Select Suspect</option>
+                <?php foreach ($suspects as $suspect) { ?>
+                    <option value="<?php echo htmlspecialchars($suspect['suspect_id']); ?>">
+                        <?php echo htmlspecialchars($suspect['name']); ?>
+                    </option>
+                <?php } ?>
+            </select>
+            <button type="button" onclick="addSuspect()">Add Suspect</button><br><br>
 
-                <input type="submit" value="Submit">
+            <!-- List of Selected Suspects -->
+            <h4>Selected Suspects:</h4>
+            <ul id="selectedSuspectsList"></ul>
 
-            </form>
+            <!-- Hidden input to store selected suspect IDs -->
+            <input type="hidden" name="selected_suspects" id="selected_suspects">
 
-        </div>
+            <!-- Witness Selection -->
+            <label for="witnessDropdown">Select Witnesses:</label><br>
+            <select id="witnessDropdown">
+                <?php foreach ($witnesses as $witness) { ?>
+                    <option value="<?php echo htmlspecialchars($witness['witness_id']); ?>">
+                        <?php echo htmlspecialchars($witness['name']); ?>
+                    </option>
+                <?php } ?>
+            </select>
+            <button type="button" onclick="addWitness()">Add Witnesses</button><br><br>
 
-        <div class="image-preview-container" id="imagePreviewContainer"></div>
+            <!-- List of Selected Witnesses -->
+            <h4>Selected Witnesses:</h4>
+            <ul id="selectedWitnessesList"></ul>
 
+            <!-- Hidden input to store selected witness IDs -->
+            <input type="hidden" name="selected_witnesses" id="selected_witnesses">
+
+            <!-- Officer In Charge -->
+            <label for="officer_id">Officer In Charge:</label><br>
+            <select id="officer_id" name="officer_id" required>
+                <option value="">Select Officer</option>
+                <?php foreach ($officers as $officer) { ?>
+                    <option value="<?php echo htmlspecialchars($officer['officer_id']); ?>">
+                        <?php echo htmlspecialchars($officer['name']); ?>
+                    </option>
+                <?php } ?>
+            </select><br><br>
+
+            <!-- Crime Status -->
+            <label for="status">Status:</label><br>
+            <select name="status" id="status" required>
+                <option value="open">Open</option>
+                <option value="under investigation">Under Investigation</option>
+                <option value="closed">Closed</option>
+            </select><br><br>
+
+
+
+            <!-- Case Number -->
+            <label for="case_number">Case Number:</label><br>
+            <input type="text" id="case_number" name="case_number"
+                value="<?php echo htmlspecialchars($next_case_number); ?>" required><br><br>
+
+            <!-- Attach Images -->
+            <label for="images">Attach Images (optional):</label><br>
+            <input type="file" name="images[]" multiple><br><br>
+
+            <!-- Submit Button -->
+            <button type="submit">Submit</button>
+        </form>
     </div>
 
+    <!-- JavaScript for Dynamic Management of Victim, Suspect, and Witness -->
     <script>
-        document.querySelector('input[name="images[]"]').addEventListener('change', function() {
-            const files = this.files;
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            previewContainer.innerHTML = '';
+        // Global arrays to store selected IDs
+        let selectedVictimIds = [];
+        let selectedSuspectIds = [];
+        let selectedWitnessIds = [];
 
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const reader = new FileReader();
+        // Function to add a victim
+        function addVictim() {
+            const dropdown = document.getElementById('victimDropdown');
+            const id = dropdown.value;
+            const name = dropdown.options[dropdown.selectedIndex].text;
 
-                reader.onload = function(e) {
-                    const preview = document.createElement('div');
-                    preview.classList.add('image-preview');
+            if (id && !selectedVictimIds.includes(id)) {
+                selectedVictimIds.push(id);
 
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
+                const ul = document.getElementById('selectedVictimsList');
+                const li = document.createElement('li');
+                li.textContent = name;
 
-                    const filename = document.createElement('div');
-                    filename.classList.add('image-filename');
-                    filename.textContent = file.name;
-
-                    preview.appendChild(img);
-                    preview.appendChild(filename);
-                    previewContainer.appendChild(preview);
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => {
+                    selectedVictimIds = selectedVictimIds.filter(victimId => victimId !== id);
+                    ul.removeChild(li);
+                    updateVictimList();
                 };
 
-                reader.readAsDataURL(file);
+                li.appendChild(removeButton);
+                ul.appendChild(li);
+                updateVictimList();
             }
-        });
+        }
+
+        function updateVictimList() {
+            document.getElementById('selected_victims').value = selectedVictimIds.join(',');
+        }
+
+        // Function to add a suspect
+        function addSuspect() {
+            const dropdown = document.getElementById('suspectDropdown');
+            const id = dropdown.value;
+            const name = dropdown.options[dropdown.selectedIndex].text;
+
+            if (id && !selectedSuspectIds.includes(id)) {
+                selectedSuspectIds.push(id);
+
+                const ul = document.getElementById('selectedSuspectsList');
+                const li = document.createElement('li');
+                li.textContent = name;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => {
+                    selectedSuspectIds = selectedSuspectIds.filter(suspectId => suspectId !== id);
+                    ul.removeChild(li);
+                    updateSuspectList();
+                };
+
+                li.appendChild(removeButton);
+                ul.appendChild(li);
+                updateSuspectList();
+            }
+        }
+
+        function updateSuspectList() {
+            document.getElementById('selected_suspects').value = selectedSuspectIds.join(',');
+        }
+
+        // Function to add a witness
+        function addWitness() {
+            const dropdown = document.getElementById('witnessDropdown');
+            const id = dropdown.value;
+            const name = dropdown.options[dropdown.selectedIndex].text;
+
+            if (id && !selectedWitnessIds.includes(id)) {
+                selectedWitnessIds.push(id);
+
+                const ul = document.getElementById('selectedWitnessesList');
+                const li = document.createElement('li');
+                li.textContent = name;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => {
+                    selectedWitnessIds = selectedWitnessIds.filter(witnessId => witnessId !== id);
+                    ul.removeChild(li);
+                    updateWitnessList();
+                };
+
+                li.appendChild(removeButton);
+                ul.appendChild(li);
+                updateWitnessList();
+            }
+        }
+
+        function updateWitnessList() {
+            document.getElementById('selected_witnesses').value = selectedWitnessIds.join(',');
+        }
     </script>
+
 </body>
 
 </html>

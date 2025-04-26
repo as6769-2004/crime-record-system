@@ -109,102 +109,101 @@ $conn->close();
 </head>
 
 <body>
-<div class="container">
-    <!-- Top Section with Buttons -->
-    <div class="top-section">
-        <h2>View Victims</h2>
-        <div class="action-buttons">
-            <button id="addVictimButton">Add Victim</button>
-            <button id="refreshButton" onclick="window.location.href='victim.php'">Refresh</button>
-        </div>
-    </div>
-
-    <div class="main-content">
-        <div id="victimForm">
-            <h2>Add Victim</h2>
-            <form method="post" enctype="multipart/form-data">
-                <label for="name">Name:</label>
-                <input type="text" name="name" required>
-
-                <label for="address">Address:</label>
-                <input type="text" name="address">
-
-                <label for="phone">Phone:</label>
-                <input type="text" name="phone">
-
-                <label for="email">Email:</label>
-                <input type="email" name="email">
-
-                <label for="dob">Date of Birth:</label>
-                <input type="date" name="dob">
-
-                <label for="gender">Gender:</label>
-                <select name="gender">
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                </select>
-
-                <label for="victim_pic">Victim Picture:</label>
-                <input type="file" name="victim_pic" accept="image/*">
-
-                <button type="submit" name="add_victim">Add Victim</button>
-            </form>
+    <div class="container">
+        <!-- Top Section with Buttons -->
+        <div class="top-section">
+            <h2>View Victims</h2>
+            <div class="action-buttons">
+                <button id="addVictimButton">Add Victim</button>
+                <button id="refreshButton" onclick="window.location.href='victim.php'">Refresh</button>
+            </div>
         </div>
 
-        <!-- Victim Table -->
-        <div class="table">
-            <?php if (!empty($victims)) : ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Address</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Date of Birth</th>
-                            <th>Gender</th>
-                            <th>Picture</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($victims as $victim) : ?>
+        <div class="main-content">
+            <div id="victimForm">
+                <h2>Add Victim</h2>
+                <form method="post" enctype="multipart/form-data">
+                    <label for="name">Name:</label>
+                    <input type="text" name="name" required>
+
+                    <label for="address">Address:</label>
+                    <input type="text" name="address">
+
+                    <label for="phone">Phone:</label>
+                    <input type="text" name="phone">
+
+                    <label for="email">Email:</label>
+                    <input type="email" name="email">
+
+                    <label for="dob">Date of Birth:</label>
+                    <input type="date" name="dob">
+
+                    <label for="gender">Gender:</label>
+                    <select name="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="victim_pic">Victim Picture:</label>
+                    <input type="file" name="victim_pic" accept="image/*">
+
+                    <button type="submit" name="add_victim">Add Victim</button>
+                </form>
+            </div>
+
+            <!-- Victim Table -->
+            <div class="table">
+                <?php if (!empty($victims)): ?>
+                    <table>
+                        <thead>
                             <tr>
-                                <td><?php echo $victim['victim_id']; ?></td>
-                                <td><?php echo $victim['name']; ?></td>
-                                <td><?php echo $victim['address']; ?></td>
-                                <td><?php echo $victim['phone']; ?></td>
-                                <td><?php echo $victim['email']; ?></td>
-                                <td><?php echo $victim['date_of_birth']; ?></td>
-                                <td><?php echo $victim['gender']; ?></td>
-                                <td>
-                                    <?php if (!empty($victim['victim_pic'])) : ?>
-                                        <img src="../../assets/pictures/<?php echo $victim['victim_pic']; ?>" 
-                                             alt="Victim Picture" 
-                                             style="max-width: 100px; max-height: 100px; cursor: pointer;" 
-                                             onclick="previewImage('../../assets/pictures/<?php echo $victim['victim_pic']; ?>')">
-                                    <?php endif; ?>
-                                </td>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Date of Birth</th>
+                                <th>Gender</th>
+                                <th>Picture</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php else : ?>
-                <p>No victims found.</p>
-            <?php endif; ?>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($victims as $victim): ?>
+                                <tr>
+                                    <td><?php echo $victim['victim_id']; ?></td>
+                                    <td><?php echo $victim['name']; ?></td>
+                                    <td><?php echo $victim['address']; ?></td>
+                                    <td><?php echo $victim['phone']; ?></td>
+                                    <td><?php echo $victim['email']; ?></td>
+                                    <td><?php echo $victim['date_of_birth']; ?></td>
+                                    <td><?php echo $victim['gender']; ?></td>
+                                    <td>
+                                        <?php if (!empty($victim['victim_pic'])): ?>
+                                            <img src="../../assets/pictures/<?php echo $victim['victim_pic']; ?>"
+                                                alt="Victim Picture" style="max-width: 100px; max-height: 100px; cursor: pointer;"
+                                                onclick="previewImage('../../assets/pictures/<?php echo $victim['victim_pic']; ?>')">
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p>No victims found.</p>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Image Preview Modal -->
-<div id="imagePreview">
-    <img id="previewImage" src="" alt="Preview">
-</div>
+    <!-- Image Preview Modal -->
+    <div id="imagePreview">
+        <img id="previewImage" src="" alt="Preview">
+    </div>
 
 
     <script>
-        document.getElementById('addVictimButton').addEventListener('click', function() {
+        document.getElementById('addVictimButton').addEventListener('click', function () {
             var form = document.getElementById('victimForm');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         });
@@ -214,7 +213,7 @@ $conn->close();
             document.getElementById('imagePreview').style.display = 'flex';
         }
 
-        document.getElementById('imagePreview').addEventListener('click', function() {
+        document.getElementById('imagePreview').addEventListener('click', function () {
             this.style.display = 'none';
         });
     </script>
