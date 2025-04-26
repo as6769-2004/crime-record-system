@@ -54,23 +54,23 @@ if ($row = $result->fetch_assoc()) {
             <h2><span id="menu-title">Menu</span></h2>
             <ul class="menu">
                 <li><a href="#" data-page="../menu_acess/station_info.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Station Info</a></li>
-                <hr>
+                 
                 <li><a href="#" data-page="../menu_acess/add_crime.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Add New Crime</a></li>
-                <hr>
-                <li><a href="#" data-page="../menu_acess/case_status.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Status</a></li>
-                <hr>
+                 
+                <li><a href="#" data-page="../menu_acess/crime_lists.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Status</a></li>
+                 
                 <li><a href="#" data-page="../menu_acess/case_log.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Log</a></li>
-                <hr>
+                 
                 <li><a href="#" data-page="../menu_acess/Officers_stations.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Officer</a></li>
-                <hr>
+                 
                 <li><a href="#" data-page="../menu_acess/witness.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Witness</a></li>
-                <hr>
+                 
                 <li><a href="#" data-page="../menu_acess/victim.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Victims</a></li>
-                <hr>
+                 
                 <li><a href="#" data-page="../menu_acess/suspect.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Suspect</a></li>
             </ul>
             <div class="left_bottom">
-                <hr>
+                 
                 <div class="datetime" id="currentDateTime"></div>
                 <a href="logout.php" class="logout-button">Logout</a>
             </div>

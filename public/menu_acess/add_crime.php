@@ -1,26 +1,21 @@
 <?php
-// Include your database connection file
 include '../../includes/db_connect.php';
 
 $created_by = isset($_GET['officer_id']) ? intval($_GET['officer_id']) : 0;
-// Station data (static for now)
-echo $created_by;
 $station_name = isset($_GET['station_name']) ? $_GET['station_name'] : 'Default Station';
 $station_id = 0;
-if ($station_id == 0) {
-    $stmt = $conn->prepare("SELECT station_id FROM officer WHERE officer_id = ?");
-    $stmt->bind_param("i", $created_by);
-    $stmt->execute();
-    $stmt->bind_result($fetched_station_id);
-    if ($stmt->fetch()) {
-        $station_id = $fetched_station_id;
-    }
-    $stmt->close();
+
+// Fetch station_id from officer
+$stmt = $conn->prepare("SELECT station_id FROM officer WHERE officer_id = ?");
+$stmt->bind_param("i", $created_by);
+$stmt->execute();
+$stmt->bind_result($fetched_station_id);
+if ($stmt->fetch()) {
+    $station_id = $fetched_station_id;
 }
+$stmt->close();
 
-echo $station_id;
-
-// Fetch last case number
+// Get next case number
 $last_case_query = "SELECT case_number FROM CRIME ORDER BY crime_id DESC LIMIT 1";
 $result_last_case = $conn->query($last_case_query);
 $last_case = "CN0000";
@@ -30,30 +25,26 @@ if ($result_last_case && $result_last_case->num_rows > 0) {
     $last_case = $row['case_number'];
 }
 
-// Extract number, increment, and generate next case number
 if (preg_match('/CN(\d+)/', $last_case, $matches)) {
     $number = intval($matches[1]) + 1;
     $next_case_number = 'CN' . str_pad($number, 4, '0', STR_PAD_LEFT);
 } else {
-    $next_case_number = $last_case;
+    $next_case_number = 'CN0001';
 }
 
-
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $crime_type = $_POST["crime_type"];
     $crime_date = $_POST["crime_date"];
     $location = $_POST["location"];
     $description = $_POST["description"];
-    $victim_id = $_POST["victim_id"];
-    $suspect_id = $_POST["suspect_id"];
+    $victim_id = $_POST["victim_id"] ?: NULL;
+    $suspect_id = $_POST["suspect_id"] ?: NULL;
     $officer_id = $_POST["officer_id"];
     $status = $_POST["status"];
     $case_number = $_POST["case_number"];
-    $created_by = $_POST["created_by"];
 
-    $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, victim_id, suspect_id, officer_id, status, case_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ,?)");
-    $stmt_insert->bind_param("ssssiiiss", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number, $created_by);
+    $stmt_insert = $conn->prepare("INSERT INTO CRIME (crime_type, crime_date, location, description, victim_id, suspect_id, officer_id, status, case_number, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt_insert->bind_param("ssssiiisss", $crime_type, $crime_date, $location, $description, $victim_id, $suspect_id, $officer_id, $status, $case_number, $created_by);
 
     if ($stmt_insert->execute()) {
         $crime_id = $conn->insert_id;
@@ -96,38 +87,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_insert->close();
 }
 
-// Fetch officers
-$stmt_officers = $conn->prepare("SELECT officer_id, name, badge_number FROM OFFICER WHERE station_id = ?");
-$stmt_officers->bind_param("i", $station_id);
-$stmt_officers->execute();
-$result_officers = $stmt_officers->get_result();
+// Fetch dropdowns
+$officers = $victims = $suspects = [];
 
-$officers = [];
-while ($row_officer = $result_officers->fetch_assoc()) {
-    $officers[] = $row_officer;
-}
+$stmt = $conn->prepare("SELECT officer_id, name, badge_number FROM OFFICER WHERE station_id = ?");
+$stmt->bind_param("i", $station_id);
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) $officers[] = $row;
+$stmt->close();
 
-// Fetch victims
-$stmt_victims = $conn->prepare("SELECT victim_id, name FROM VICTIM");
-$stmt_victims->execute();
-$result_victims = $stmt_victims->get_result();
+$stmt = $conn->prepare("SELECT victim_id, name FROM VICTIM");
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) $victims[] = $row;
+$stmt->close();
 
-$victims = [];
-while ($row_victim = $result_victims->fetch_assoc()) {
-    $victims[] = $row_victim;
-}
-
-// Fetch suspects
-$stmt_suspects = $conn->prepare("SELECT suspect_id, name FROM SUSPECT");
-$stmt_suspects->execute();
-$result_suspects = $stmt_suspects->get_result();
-
-$suspects = [];
-while ($row_suspect = $result_suspects->fetch_assoc()) {
-    $suspects[] = $row_suspect;
-}
+$stmt = $conn->prepare("SELECT suspect_id, name FROM SUSPECT");
+$stmt->execute();
+$result = $stmt->get_result();
+while ($row = $result->fetch_assoc()) $suspects[] = $row;
+$stmt->close();
 
 $conn->close();
+?>
+
 ?>
 
 <!DOCTYPE html>
@@ -148,6 +132,8 @@ $conn->close();
                 echo "<p>" . htmlspecialchars($message) . "</p>";
             } ?>
             <form method="post" enctype="multipart/form-data">
+                <input type="hidden" name="created_by" value="<?php echo htmlspecialchars($created_by); ?>">
+
                 <label for="crime_type">Crime Type:</label><br>
                 <input type="text" id="crime_type" name="crime_type" required><br><br>
 

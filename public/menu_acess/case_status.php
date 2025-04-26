@@ -1,92 +1,144 @@
 <?php
-
-// Include your database connection file
 include '../../includes/db_connect.php';
 
-// Get station details (replace with your logic to fetch station data)
-$station_name = "Your Station Name"; // Example
-$station_code = "ST001"; // Example
-$station_address = "123 Main St, Anytown"; // Example
-$station_id = 1; // Example
+$station_name = $_GET['station_name'] ?? '';
+$officer_id = $_GET['officer_id'] ?? 0;
+$name = $_GET['name'] ?? '';
 
-// Use a PREPARED STATEMENT to prevent SQL injection
-$stmt = $conn->prepare("SELECT * FROM Officer WHERE Station_ID = ?");
-$stmt->bind_param("i", $station_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$officer_info = "";
-if ($result->num_rows > 0) {
-    $officer_info .= "<table border='1'>"; // Use a table for better arrangement
-    $officer_info .= "<thead><tr><th>Name</th><th>Rank</th><th>Post</th><th>DOB</th><th>Contact</th><th>Email</th></tr></thead>"; // Table header
-    $officer_info .= "<tbody>"; // Start table body
-
-    while ($row = $result->fetch_assoc()) {
-        $officer_info .= "<tr>";
-        $officer_info .= "<td>" . htmlspecialchars($row["Name"]) . "</td>";
-        $officer_info .= "<td>" . htmlspecialchars($row["Rank"]) . "</td>";
-        $officer_info .= "<td>" . htmlspecialchars($row["Post"]) . "</td>";
-        $officer_info .= "<td>" . htmlspecialchars($row["DOB"]) . "</td>";
-        $officer_info .= "<td>" . htmlspecialchars($row["ContactNo"]) . "</td>";
-        $officer_info .= "<td>" . htmlspecialchars($row["Email"]) . "</td>";
-        $officer_info .= "</tr>";
-    }
-    $officer_info .= "</tbody></table>"; // Close table body and table
-} else {
-    $officer_info = "No officers found for this station.";
-}
-
-$stmt->close();
-$conn->close();
+$station_name_safe = htmlspecialchars($station_name);
+$name_safe = htmlspecialchars($name);
+$officer_id = intval($officer_id);
 
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($station_name); ?> - Crime Record System</title>
-    <link rel="stylesheet" href="../../assets/css/station_info.css">
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse; /* Collapse table borders */
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd; /* Add border to table cells */
-        }
-    </style>
+    <title>Case Status</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+    <!-- Link to the custom CSS file -->
+    <link rel="stylesheet" href="../../assets/css/case_status.css">
 </head>
-
 <body>
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Case Status for Officer: <?= $name_safe ?> (Station: <?= $station_name_safe ?>)</h2>
 
-    <div class="right-top-panel">
-        <div class="tab" data-tab="officers">Officers</div>
-        <div class="tab" data-tab="logs">Logs</div>
-        <div class="tab" data-tab="witness">Witness</div>
-        <div class="tab" data-tab="victim">Victim</div>
-    </div>
-    <div class="inner-right-column">
-        <div>
-            <ul>
-                <li><strong>Name:</strong> <?php echo htmlspecialchars($station_name); ?></li>
-                <li><strong>Station Code:</strong> <?php echo htmlspecialchars($station_code); ?></li>
-                <li><strong>Station Address:</strong> <?php echo htmlspecialchars($station_address); ?></li>
-                <li><strong>Officers:</strong> <?php echo $officer_info; ?></li>
-                <li><strong>Logs:</strong> [Recent Logs]</li>
-                <li><strong>All Logs:</strong> [View All Logs]</li>
-                <li><strong>Suspects:</strong> [Suspects Information]</li>
-                <li><strong>Witnesses:</strong> [Witnesses Information]</li>
-                <li><strong>Victims:</strong> [Victims Information]</li>
-            </ul>
-        </div>
-    </div>
+<?php
+$query = "
+SELECT 
+    c.crime_id, c.crime_type, c.crime_date, c.location, c.description, c.status, c.case_number, c.reported_at,
+    
+    -- Officer
+    o.name AS officer_name, o.badge_number, o.r_rank, o.phone AS officer_phone, o.email AS officer_email,
+    
+    -- Victim
+    IFNULL(v.name, 'Not Added') AS victim_name, IFNULL(v.address, 'Not Added') AS victim_address,
+    IFNULL(v.phone, 'Not Added') AS victim_phone, IFNULL(v.email, 'Not Added') AS victim_email,
+    IFNULL(v.gender, 'Not Added') AS victim_gender, IFNULL(v.date_of_birth, 'Not Added') AS victim_dob,
+    IFNULL(v.victim_pic, 'Not Added') AS victim_pic,
 
+    -- Suspect
+    IFNULL(s.name, 'Not Added') AS suspect_name, IFNULL(s.address, 'Not Added') AS suspect_address,
+    IFNULL(s.phone, 'Not Added') AS suspect_phone, IFNULL(s.gender, 'Not Added') AS suspect_gender,
+    IFNULL(s.date_of_birth, 'Not Added') AS suspect_dob, IFNULL(s.suspect_pic, 'Not Added') AS suspect_pic,
+    IFNULL(s.known_offender, 'Not Added') AS suspect_known_offender
+
+FROM CRIME c
+LEFT JOIN OFFICER o ON c.officer_id = o.officer_id
+LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
+LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
+WHERE c.created_by = ? OR c.officer_id = ?
+ORDER BY c.crime_date DESC;
+";
+
+$stmt = $conn->prepare($query);
+if (!$stmt) {
+    die("<div class='alert alert-danger'>Prepare failed: " . $conn->error . "</div>");
+}
+$stmt->bind_param("ii", $officer_id, $officer_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        echo "<div class='card mb-4 shadow'>";
+        echo "<div class='card-header bg-dark text-white'>";
+        echo "<h5>Case #{$row['case_number']} - {$row['crime_type']}</h5>";
+        echo "<small>Status: {$row['status']} | Date: {$row['crime_date']}</small>";
+        echo "</div>";
+        echo "<div class='card-body'>";
+
+        echo "<h6>Crime Details</h6>";
+        echo "<p><strong>Location:</strong> {$row['location']}<br>";
+        echo "<strong>Description:</strong> {$row['description']}<br>";
+        echo "<strong>Reported At:</strong> {$row['reported_at']}</p>";
+
+        echo "<h6>Officer Handling Case</h6>";
+        echo "<p>Name: {$row['officer_name']}<br>Rank: {$row['r_rank']}<br>Badge #: {$row['badge_number']}<br>Phone: {$row['officer_phone']}<br>Email: {$row['officer_email']}</p>";
+
+        echo "<h6>Victim Information</h6>";
+        echo "<p>Name: {$row['victim_name']}<br>Address: {$row['victim_address']}<br>Phone: {$row['victim_phone']}<br>Email: {$row['victim_email']}<br>Gender: {$row['victim_gender']}<br>DOB: {$row['victim_dob']}<br>";
+        echo ($row['victim_pic'] !== 'Not Added') ? "<img src='../uploads/{$row['victim_pic']}' alt='Victim Photo' class='img-thumbnail' width='120'>" : "Photo: Not Added";
+        echo "</p>";
+
+        echo "<h6>Suspect Information</h6>";
+        echo "<p>Name: {$row['suspect_name']}<br>Address: {$row['suspect_address']}<br>Phone: {$row['suspect_phone']}<br>Gender: {$row['suspect_gender']}<br>DOB: {$row['suspect_dob']}<br>Known Offender: {$row['suspect_known_offender']}<br>";
+        echo ($row['suspect_pic'] !== 'Not Added') ? "<img src='../uploads/{$row['suspect_pic']}' alt='Suspect Photo' class='img-thumbnail' width='120'>" : "Photo: Not Added";
+        echo "</p>";
+
+        // Case Logs
+        $log_query = "SELECT log_date, log_entry FROM CASE_LOGS WHERE crime_id = ?";
+        $log_stmt = $conn->prepare($log_query);
+        $log_stmt->bind_param("i", $row['crime_id']);
+        $log_stmt->execute();
+        $logs = $log_stmt->get_result();
+
+        echo "<h6>Case Logs</h6>";
+        if ($logs->num_rows > 0) {
+            echo "<ul class='list-group'>";
+            while ($log = $logs->fetch_assoc()) {
+                echo "<li class='list-group-item'><strong>{$log['log_date']}:</strong> {$log['log_entry']}</li>";
+            }
+            echo "</ul>";
+        } else {
+            echo "<p>No logs added.</p>";
+        }
+
+        // Evidence
+        $evidence_query = "SELECT description, location_found, date_collected, file_url FROM EVIDENCE WHERE crime_id = ?";
+        $evi_stmt = $conn->prepare($evidence_query);
+        $evi_stmt->bind_param("i", $row['crime_id']);
+        $evi_stmt->execute();
+        $evidences = $evi_stmt->get_result();
+
+        echo "<h6>Evidence</h6>";
+        if ($evidences->num_rows > 0) {
+            while ($evi = $evidences->fetch_assoc()) {
+                echo "<div class='border p-2 mb-2'>";
+                echo "<strong>Description:</strong> {$evi['description']}<br>";
+                echo "<strong>Location Found:</strong> {$evi['location_found']}<br>";
+                echo "<strong>Date Collected:</strong> {$evi['date_collected']}<br>";
+                if (!empty($evi['file_url'])) {
+                    echo "<a href='../uploads/{$evi['file_url']}' target='_blank' class='btn btn-sm btn-outline-primary mt-1'>View File</a>";
+                } else {
+                    echo "No file uploaded.";
+                }
+                echo "</div>";
+            }
+        } else {
+            echo "<p>No evidence added.</p>";
+        }
+
+        echo "</div></div>";
+    }
+} else {
+    echo "<div class='alert alert-info'>No cases found for this officer.</div>";
+}
+
+$stmt->close();
+$conn->close();
+?>
+
+</div>
 </body>
-
 </html>

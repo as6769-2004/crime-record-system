@@ -2,16 +2,16 @@
 include('../../includes/db_connect.php');
 
 // Check and validate URL parameters
-if (!isset($_GET['station_name']) || !isset($_GET['officer_id']) || !isset($_GET['officer_name'])) {
+if (!isset($_GET['station_name']) || !isset($_GET['officer_id']) || !isset($_GET['name'])) {
     $message = urlencode("Missing required parameters. Please login.");
-    header("Location: ../../login.php?error=$message");
+    header("Location: ../start/login.php?error=$message");
     exit;
 }
 
 // Retrieve and sanitize parameters
 $station_name = urldecode($_GET['station_name']);
 $officer_id = intval($_GET['officer_id']);
-$officer_name = urldecode($_GET['officer_name']);
+$officer_name = urldecode($_GET['name']); // updated key
 
 $station_name_safe = htmlspecialchars($station_name);
 $officer_name_safe = htmlspecialchars($officer_name);

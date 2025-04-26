@@ -125,17 +125,17 @@ CREATE TABLE EVIDENCE (
     FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
 );
 -- ===================== VIEW: ACTIVE CASES =====================
-CREATE OR REPLACE VIEW active_cases AS
-SELECT c.crime_id,
-    c.case_number,
-    c.crime_type,
-    c.status,
-    v.name AS victim_name,
-    s.name AS suspect_name
-FROM CRIME c
-    LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
-    LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
-WHERE c.status IN ('open', 'under investigation');
+-- CREATE OR REPLACE VIEW active_cases AS
+-- SELECT c.crime_id,
+--     c.case_number,
+--     c.crime_type,
+--     c.status,
+--     v.name AS victim_name,
+--     s.name AS suspect_name
+-- FROM CRIME c
+--     LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
+--     LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
+-- WHERE c.status IN ('open', 'under investigation');
 
 
 
