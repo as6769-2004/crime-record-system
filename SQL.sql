@@ -32,6 +32,20 @@ CREATE TABLE OFFICER (
 ALTER TABLE POLICE_STATION
 ADD CONSTRAINT fk_head_officer FOREIGN KEY (head_officer_id) REFERENCES OFFICER(officer_id) ON DELETE
 SET NULL;
+
+-- ===================== CRIME =====================
+CREATE TABLE CRIME (
+    crime_id INT AUTO_INCREMENT PRIMARY KEY,
+    crime_type VARCHAR(255) NOT NULL,
+    crime_date DATETIME NOT NULL,
+    location TEXT NOT NULL,
+    description TEXT,
+    officer_id INT NULL,
+    status ENUM('open', 'under investigation', 'closed') DEFAULT 'open',
+    case_number VARCHAR(50) UNIQUE NOT NULL,
+    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INT
+);
 -- ===================== VICTIM =====================
 CREATE TABLE VICTIM (
     victim_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,6 +59,14 @@ CREATE TABLE VICTIM (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT
 );
+-- Create crime_victim table for storing relationships between crimes and suspects
+CREATE TABLE crime_victims (
+    crime_id INT NOT NULL,
+    victim_id INT NOT NULL,
+    PRIMARY KEY (crime_id, victim_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
+    FOREIGN KEY (victim_id) REFERENCES victim(victim_id) ON DELETE CASCADE
+);
 -- ===================== SUSPECT =====================
 CREATE TABLE SUSPECT (
     suspect_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,6 +79,15 @@ CREATE TABLE SUSPECT (
     known_offender BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT
+);
+
+-- Create crime_suspects table for storing relationships between crimes and suspects
+CREATE TABLE crime_suspects (
+    crime_id INT NOT NULL,
+    suspect_id INT NOT NULL,
+    PRIMARY KEY (crime_id, suspect_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
+    FOREIGN KEY (suspect_id) REFERENCES suspect(suspect_id) ON DELETE CASCADE
 );
 -- ===================== WITNESS =====================
 CREATE TABLE WITNESS (
@@ -72,31 +103,33 @@ CREATE TABLE WITNESS (
     created_by INT
 );
 
--- ===================== CRIME =====================
-CREATE TABLE CRIME (
-    crime_id INT AUTO_INCREMENT PRIMARY KEY,
-    crime_type VARCHAR(255) NOT NULL,
-    crime_date DATETIME NOT NULL,
-    location TEXT NOT NULL,
-    description TEXT,
-    officer_id INT NULL,
-    status ENUM('open', 'under investigation', 'closed') DEFAULT 'open',
-    case_number VARCHAR(50) UNIQUE NOT NULL,
-    reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by INT
+-- Create crime_witnesses table for storing relationships between crimes and witnesses
+CREATE TABLE crime_witnesses (
+    crime_id INT NOT NULL,
+    witness_id INT NOT NULL,
+    PRIMARY KEY (crime_id, witness_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
+    FOREIGN KEY (witness_id) REFERENCES witness(witness_id) ON DELETE CASCADE
 );
 
 -- ===================== EVIDENCE =====================
-CREATE TABLE EVIDENCE (
-    evidence_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE evidence (
+    evidence_id INT AUTO_INCREMENT,
     crime_id INT NOT NULL,
-    description TEXT NOT NULL,
-    location_found TEXT,
+    created_by INT,
     date_collected DATETIME NOT NULL,
-    file_url VARCHAR(255),
-    created_by INT 
+    PRIMARY KEY (evidence_id),
+    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE
 );
-
+CREATE TABLE evidence_file (
+    file_id INT AUTO_INCREMENT,
+    evidence_id INT NOT NULL,
+    file_url VARCHAR(255) NOT NULL,
+    file_type VARCHAR(50),
+    description TEXT,
+    PRIMARY KEY (file_id, evidence_id),
+    FOREIGN KEY (evidence_id) REFERENCES evidence(evidence_id) ON DELETE CASCADE
+);
 -- ===================== LOGIN_INFO =====================
 CREATE TABLE LOGIN_INFO (
     login_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -127,27 +160,5 @@ CREATE TABLE CRIME_RECORDS (
     status VARCHAR(50),
     FOREIGN KEY (crime_id) REFERENCES CRIME(crime_id) ON DELETE CASCADE
 );
--- Create crime_victim table for storing relationships between crimes and suspects
-CREATE TABLE crime_victims (
-    crime_id INT NOT NULL,
-    victim_id INT NOT NULL,
-    PRIMARY KEY (crime_id, victim_id),
-    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
-    FOREIGN KEY (victim_id) REFERENCES victim(victim_id) ON DELETE CASCADE
-);
--- Create crime_suspects table for storing relationships between crimes and suspects
-CREATE TABLE crime_suspects (
-    crime_id INT NOT NULL,
-    suspect_id INT NOT NULL,
-    PRIMARY KEY (crime_id, suspect_id),
-    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
-    FOREIGN KEY (suspect_id) REFERENCES suspect(suspect_id) ON DELETE CASCADE
-);
--- Create crime_witnesses table for storing relationships between crimes and witnesses
-CREATE TABLE crime_witnesses (
-    crime_id INT NOT NULL,
-    witness_id INT NOT NULL,
-    PRIMARY KEY (crime_id, witness_id),
-    FOREIGN KEY (crime_id) REFERENCES crime(crime_id) ON DELETE CASCADE,
-    FOREIGN KEY (witness_id) REFERENCES witness(witness_id) ON DELETE CASCADE
-);
+
+

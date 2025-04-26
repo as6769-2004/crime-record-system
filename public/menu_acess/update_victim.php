@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $insertStmt->close();
         } else {
-            echo "<div class='alert alert-warning'>Victim is already associated with this crime.</div>";
+            echo "<div class='alert alert-warning'>Victim $new_victim_id is already associated with this crime.</div>";
         }
         $checkStmt->close();
     }
@@ -88,6 +88,7 @@ $allVictimsResult = $allVictimsStmt->get_result();
     <title>Update Crime - Victims</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 
 <body class="bg-dark text-light">
     <div class="container py-4">
@@ -124,7 +125,7 @@ $allVictimsResult = $allVictimsStmt->get_result();
                                     <td><?= htmlspecialchars($victim['phone']) ?></td>
                                     <td><?= htmlspecialchars($victim['email']) ?></td>
                                     <td>
-                                        <form action="update_crime.php?crime_id=<?= $crime_id ?>" method="post"
+                                        <form action="update_victim.php?crime_id=<?= $crime_id ?>" method="post"
                                             onsubmit="return confirm('Are you sure you want to drop this victim from the crime?');"
                                             style="display:inline;">
                                             <input type="hidden" name="victim_id" value="<?= $victim['victim_id'] ?>">
@@ -148,7 +149,7 @@ $allVictimsResult = $allVictimsStmt->get_result();
                 <h5>Add Victim to Crime</h5>
             </div>
             <div class="card-body">
-                <form action="update_crime.php?crime_id=<?= $crime_id ?>" method="post">
+                <form action="update_victim.php?crime_id=<?= $crime_id ?>" method="post">
                     <div class="mb-3">
                         <label for="new_victim_id" class="form-label">Select Victim to Add</label>
                         <select class="form-select" id="new_victim_id" name="new_victim_id" required>

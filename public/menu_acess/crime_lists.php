@@ -44,11 +44,17 @@ if ($result->num_rows > 0) {
     echo "<ul class='list-group'>";
     while ($row = $result->fetch_assoc()) {
         echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
+        
+        // Display case details on the left
         echo "<a href='crime_detail.php?crime_id={$row['crime_id']}' class='text-decoration-none'>";
         echo "<h5 class='mb-1'>{$row['crime_type']}</h5>";
         echo "<p class='mb-1'>{$row['status']}</p>";
         echo "<small>Case Number: {$row['case_number']} | Date: {$row['crime_date']}</small>";
         echo "</a>";
+
+        // Add "Take Action" button on the right
+        echo "<button class='btn btn-outline-primary btn-sm ms-2' onclick=\"location.href='crime_update_pages.php?crime_id={$row['crime_id']}'\">Take Action</button>";
+
         echo "</li>";
     }
     echo "</ul>";
