@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->bind_param("iss", $officer_id, $username, $password);
 
         if ($stmt->execute()) {
-            echo "<p style='color: green;'>Sign-up successful! You can now <a href='login.php'>login</a>.</p>";
+            echo "<p style='color: green;'>Sign-up successful! You can now login now";
         } else {
             echo "<p style='color: red;'>Error: " . $stmt->error . "</p>";
         }

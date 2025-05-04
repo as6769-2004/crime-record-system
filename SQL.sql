@@ -45,7 +45,7 @@ CREATE TABLE CRIME (
     case_number VARCHAR(50) UNIQUE NOT NULL,
     reported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by INT
-);
+)ENGINE=InnoDB;
 -- ===================== VICTIM =====================
 CREATE TABLE VICTIM (
     victim_id INT AUTO_INCREMENT PRIMARY KEY,

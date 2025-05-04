@@ -1,116 +1,68 @@
-DELIMITER $$
-
-CREATE TRIGGER trg_after_crime_insert
-AFTER INSERT ON CRIME
-FOR EACH ROW
-BEGIN
-    INSERT INTO CASE_LOGS (crime_id, log_date, log_entry, officer_id)
-    VALUES (
-        NEW.crime_id,
-        NOW(),
-        CONCAT('New crime registered: ', NEW.crime_type),
-        NEW.officer_id
-    );
-END$$
-
-DELIMITER ;
-
-
-
-
--- SHOW TRIGGERS FROM crime_system_working;
-
-
-
--- Cursors 
-
-DELIMITER $$
-
-CREATE PROCEDURE log_active_crimes()
-BEGIN
-    DECLARE done INT DEFAULT 0;
-    DECLARE c_id INT;
-    DECLARE o_id INT;
-
-    -- Cursor to fetch all active crime cases
-    DECLARE cur CURSOR FOR 
-        SELECT crime_id, officer_id FROM CRIME WHERE status = 'Active';
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
-
-    OPEN cur;
-
-    read_loop: LOOP
-        FETCH cur INTO c_id, o_id;
-
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-
-        -- Insert log into CASE_LOGS
-        INSERT INTO CASE_LOGS (crime_id, log_date, log_entry, officer_id)
-        VALUES (
-            c_id,
-            NOW(),
-            CONCAT('Routine log: Crime ID ', c_id, ' is still active.'),
-            o_id
-        );
-
-    END LOOP;
-
-    CLOSE cur;
-END$$
-
-DELIMITER ;
-
-
-
-
+-- View for victim details per crime
+CREATE OR REPLACE VIEW view_crime_victims AS
 SELECT
-    ps.station_name AS "Station Name",
-    o.name AS "Officer Name"
-FROM OFFICER o
-RIGHT JOIN POLICE_STATION ps ON o.station_id = ps.station_id;
+    cv.crime_id,
+    v.victim_id,
+    v.name AS victim_name,
+    v.address AS victim_address,
+    v.phone AS victim_phone,
+    v.email AS victim_email,
+    v.date_of_birth AS victim_dob,
+    v.gender AS victim_gender,
+    v.victim_pic
+FROM crime_victims cv
+JOIN victim v ON cv.victim_id = v.victim_id;
 
-
-
-
-
-
-
+-- View for suspect details per crime
+CREATE OR REPLACE VIEW view_crime_suspects AS
 SELECT
-    ps.station_name AS "Station Name",
-    o.name AS "Officer Name"
-FROM OFFICER o
-RIGHT JOIN POLICE_STATION ps ON o.station_id = ps.station_id;
+    cs.crime_id,
+    s.suspect_id,
+    s.name AS suspect_name,
+    s.address AS suspect_address,
+    s.phone AS suspect_phone,
+    s.date_of_birth AS suspect_dob,
+    s.gender AS suspect_gender,
+    s.suspect_pic,
+    s.known_offender
+FROM crime_suspects cs
+JOIN suspect s ON cs.suspect_id = s.suspect_id;
 
-
-
-
+-- View for witness details per crime
+CREATE OR REPLACE VIEW view_crime_witnesses AS
 SELECT
-    o.name AS "Officer Name",
-    ps.station_name AS "Station Name"
-FROM OFFICER o
-INNER JOIN POLICE_STATION ps ON o.station_id = ps.station_id;
+    cw.crime_id,
+    w.witness_id,
+    w.name AS witness_name,
+    w.address AS witness_address,
+    w.phone AS witness_phone,
+    w.email AS witness_email,
+    w.date_of_birth AS witness_dob,
+    w.gender AS witness_gender,
+    w.witness_pic
+FROM crime_witnesses cw
+JOIN witness w ON cw.witness_id = w.witness_id;
 
+-- // a view table that includes the officer name, crime type, victim details, witness details, and suspect details:
 
-
-
+CREATE OR REPLACE VIEW view_crime_details_full AS
 SELECT
-    o.name AS "Officer Name",
-    ps.station_name AS "Station Name"
-FROM OFFICER o
-FULL OUTER JOIN POLICE_STATION ps ON o.station_id = ps.station_id;
-
-
-
-CREATE VIEW Active_Crimes AS
-SELECT
-    case_number,
-    crime_type,
-    crime_date,
-    location
-FROM CRIME
-WHERE status IN ('Open', 'Investigating');
-
-SHOW FULL TABLES IN crime_system_working WHERE TABLE_TYPE LIKE 'VIEW';
+    o.name AS officer_name,
+    c.crime_type,
+    v.name AS victim_name,
+    v.address AS victim_address,
+    v.phone AS victim_phone,
+    w.name AS witness_name,
+    w.address AS witness_address,
+    w.phone AS witness_phone,
+    s.name AS suspect_name,
+    s.address AS suspect_address,
+    s.phone AS suspect_phone
+FROM crime c
+JOIN officer o ON c.officer_id = o.officer_id
+JOIN crime_victims cv ON c.crime_id = cv.crime_id
+JOIN victim v ON cv.victim_id = v.victim_id
+JOIN crime_witnesses cw ON c.crime_id = cw.crime_id
+JOIN witness w ON cw.witness_id = w.witness_id
+JOIN crime_suspects cs ON c.crime_id = cs.crime_id
+JOIN suspect s ON cs.suspect_id = s.suspect_id;

@@ -1,5 +1,4 @@
 <?php
-include 'headerlogged.php';
 
 include '../../includes/db_connect.php';
 
@@ -34,6 +33,7 @@ if ($row = $result->fetch_assoc()) {
 } else {
     echo "name not found"; // Fallback if no result is found
 }
+include 'headerlogged.php';
 ?>
 
 <!DOCTYPE html>
@@ -43,7 +43,7 @@ if ($row = $result->fetch_assoc()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $station_name_safe; ?> - Crime Record System</title>
-    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/main_new.css">
 
 </head>
 
@@ -53,24 +53,40 @@ if ($row = $result->fetch_assoc()) {
         <div class="left-column">
             <h2><span id="menu-title">Menu</span></h2>
             <ul class="menu">
-                <li><a href="#" data-page="../menu_acess/station_info.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Station Info</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/add_crime.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Add New Crime</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/crime_lists.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Status</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/case_log.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case Log</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/Officers_stations.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Officer</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/witness.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Witness</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/victim.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Victims</a></li>
-                 
-                <li><a href="#" data-page="../menu_acess/suspect.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Suspect</a></li>
+                <li><a href="#"
+                        data-page="../menu_acess/station_info.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Station
+                        Info</a></li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/add_crime.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Add
+                        New Crime</a></li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/crime_lists.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case
+                        Status</a></li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/case_log.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Case
+                        Log</a></li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/Officers_stations.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Officer</a>
+                </li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/witness.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Witness</a>
+                </li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/victim.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Victims</a>
+                </li>
+
+                <li><a href="#"
+                        data-page="../menu_acess/suspect.php?station_name=<?php echo urlencode($station_name_safe); ?>&officer_id=<?php echo $officer_id_safe; ?>&name=<?php echo urlencode($name_safe); ?>">Suspect</a>
+                </li>
             </ul>
             <div class="left_bottom">
-                 
+
                 <div class="datetime" id="currentDateTime"></div>
                 <a href="logout.php" class="logout-button">Logout</a>
             </div>
@@ -79,26 +95,72 @@ if ($row = $result->fetch_assoc()) {
         <div class="right-column">
             <div id="display-container">
                 <div id="default-content">
-                    <?php echo "Welcome to " . $station_name_safe . ", Officer " . $name_safe; ?>
-
+                    <div class="welcome-message">
+                        <?php echo "Welcome to <strong>" . $station_name_safe . "</strong>, Officer <strong>" . $name_safe . "</strong>"; ?>
+                    </div>
                     <div id="news-section">
                         <h2>Latest News</h2>
-                        <ul id="news-list">
+                        <ul id="news-list" style="list-style: none; padding-left: 0;">
                             <?php
                             $newsItems = [
-                                "Breaking: Major tech company announces new AI advancements.",
-                                "Business News: Stock market sees slight fluctuations."
+                                [
+                                    "title" => "Breaking: Major tech company announces new AI advancements.",
+                                    "image" => "https://via.placeholder.com/100x60?text=AI"
+                                ],
+                                [
+                                    "title" => "Business News: Stock market sees slight fluctuations.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Stocks"
+                                ],
+                                [
+                                    "title" => "Security Alert: New cyberattack targets government systems.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Cyber"
+                                ],
+                                [
+                                    "title" => "Local: Community rally held for flood victims.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Local"
+                                ],
+                                [
+                                    "title" => "Sports: Underdog team wins national championship.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Sports"
+                                ],
+                                [
+                                    "title" => "Technology: Breakthrough in quantum computing announced.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Quantum"
+                                ],
+                                [
+                                    "title" => "Politics: New policy changes spark nationwide debate.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Politics"
+                                ],
+                                [
+                                    "title" => "Environment: Global emissions reach record low in April.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Eco"
+                                ],
+                                [
+                                    "title" => "Health: Vaccine research shows promising results.",
+                                    "image" => "https://via.placeholder.com/100x60?text=Health"
+                                ],
+                                [
+                                    "title" => "International: Peace talks resume in conflict zone.",
+                                    "image" => "https://via.placeholder.com/100x60?text=World"
+                                ]
                             ];
+
                             foreach ($newsItems as $news) {
-                                echo "<li>" . htmlspecialchars($news) . "</li>";
+                                echo '<li style="display: flex; align-items: center; margin-bottom: 10px;">';
+                                echo '<img src="' . htmlspecialchars($news['image']) . '" alt="News Image" style="width: 100px; height: 60px; margin-right: 10px;">';
+                                echo '<span>' . htmlspecialchars($news['title']) . '</span>';
+                                echo '</li>';
                             }
                             ?>
                         </ul>
                     </div>
+
                 </div>
                 <iframe id="contentFrame"></iframe>
             </div>
         </div>
+
+
     </div>
 
     <script>

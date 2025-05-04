@@ -14,66 +14,6 @@ $stmt->execute();
 $crime_result = $stmt->get_result();
 $crime = $crime_result->fetch_assoc();
 
-// // Query to get associated evidence for this crime
-// // Prepare the query to fetch evidence file details by crime_id
-// $evidence_query = "
-//     SELECT ef.file_url, ef.file_type, ef.description
-//     FROM evidence e
-//     JOIN evidence_file ef ON e.evidence_id = ef.evidence_id
-//     WHERE e.crime_id = ?";
-// $evidence_stmt = $conn->prepare($evidence_query);
-
-// // Check if the statement was prepared successfully
-// if ($evidence_stmt === false) {
-//     die('Error preparing the statement: ' . $conn->error);
-// }
-
-// // Bind the parameter to the prepared statement
-// $evidence_stmt->bind_param("i", $crime_id);  // 'i' indicates the parameter is an integer
-
-// // Check if binding was successful
-// if ($evidence_stmt->error) {
-//     die('Error binding the parameter: ' . $evidence_stmt->error);
-// }
-
-// // Execute the prepared statement
-// $evidence_stmt->execute();
-
-// // Check if execution was successful
-// if ($evidence_stmt->error) {
-//     die('Error executing the query: ' . $evidence_stmt->error);
-// }
-
-// // Get the result from the executed query
-// $evidence_result = $evidence_stmt->get_result();
-
-// // Check if any records were returned
-// if ($evidence_result->num_rows > 0) {
-//     // Output the evidence details
-//     while ($evidence = $evidence_result->fetch_assoc()) {
-//         // Check if 'file_url' key exists in the row
-//         if (isset($evidence['file_url'])) {
-//             $file_url = $evidence['file_url'];
-//             $file_type = $evidence['file_type'];
-//             $description = $evidence['description'];
-
-//             // Process the evidence file information
-//             echo "<div>";
-//             echo "<p><strong>File URL:</strong> " . $file_url . "</p>";
-//             echo "<p><strong>File Type:</strong> " . $file_type . "</p>";
-//             echo "<p><strong>Description:</strong> " . $description . "</p>";
-//             echo "<a href='$file_url' target='_blank'>Click to view the file</a>";
-//             echo "</div><br>";
-//         } else {
-//             echo "Evidence file URL not found for this record.<br>";
-//         }
-//     }
-// } else {
-//     echo "No evidence found for this crime ID.<br>";
-// }
-
-// // Close the statement after use
-
 // Query to get associated case logs for this crime
 $logs_query = "SELECT * FROM case_logs WHERE crime_id = ?";
 $logs_stmt = $conn->prepare($logs_query);

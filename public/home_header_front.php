@@ -82,7 +82,7 @@ $station_name = $_SESSION['station_name']; // Retrieve the police station name
                 <ul class="navbar-nav ms-auto">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
+                        <a class="nav-link" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">About</a>
@@ -94,10 +94,10 @@ $station_name = $_SESSION['station_name']; // Retrieve the police station name
                         <a class="nav-link" href="#">Helpline</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Signup</a>
+                        <a class="nav-link" href="start/signup.php">Signup</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="../public/start/login.php">Login</a>
+                        <a class="nav-link" href="start/login.php">Login</a>
                     </li>
 
 
