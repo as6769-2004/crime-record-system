@@ -97,7 +97,7 @@ $allWitnessResult = $allWitnessStmt->get_result();
 
         <!-- Current Witnesses -->
         <div class="card mb-4 shadow bg-secondary text-light">
-            <div class="card-header bg-info">
+            <div class="card-header bg-warning">
                 <h5>Current Witnesses</h5>
             </div>
             <div class="card-body">

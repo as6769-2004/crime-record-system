@@ -28,7 +28,7 @@ $query = "
 SELECT 
     c.crime_id, c.crime_type, c.crime_date, c.status, c.case_number
 FROM CRIME c
-WHERE c.created_by = ? OR c.officer_id = ?
+WHERE (c.created_by = ? OR c.officer_id = ?) AND c.status = 'open'
 ORDER BY c.crime_date DESC;
 ";
 

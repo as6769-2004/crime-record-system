@@ -27,25 +27,25 @@ $officer_id = intval($officer_id);
     </header>
 
 <?php
-$query = "
-SELECT 
-    c.crime_id, c.crime_type, c.crime_date, c.location, c.description, c.status, c.case_number, c.reported_at,
-    o.name AS officer_name, o.badge_number, o.r_rank, o.phone AS officer_phone, o.email AS officer_email,
-    IFNULL(v.name, 'Not Added') AS victim_name, IFNULL(v.address, 'Not Added') AS victim_address,
-    IFNULL(v.phone, 'Not Added') AS victim_phone, IFNULL(v.email, 'Not Added') AS victim_email,
-    IFNULL(v.gender, 'Not Added') AS victim_gender, IFNULL(v.date_of_birth, 'Not Added') AS victim_dob,
-    IFNULL(v.victim_pic, 'Not Added') AS victim_pic,
-    IFNULL(s.name, 'Not Added') AS suspect_name, IFNULL(s.address, 'Not Added') AS suspect_address,
-    IFNULL(s.phone, 'Not Added') AS suspect_phone, IFNULL(s.gender, 'Not Added') AS suspect_gender,
-    IFNULL(s.date_of_birth, 'Not Added') AS suspect_dob, IFNULL(s.suspect_pic, 'Not Added') AS suspect_pic,
-    IFNULL(s.known_offender, 'Not Added') AS suspect_known_offender
-FROM CRIME c
-LEFT JOIN OFFICER o ON c.officer_id = o.officer_id
-LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
-LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
-WHERE c.created_by = ? OR c.officer_id = ?
-ORDER BY c.crime_date DESC;
-";
+// $query = "
+// SELECT 
+//     c.crime_id, c.crime_type, c.crime_date, c.location, c.description, c.status, c.case_number, c.reported_at,
+//     o.name AS officer_name, o.badge_number, o.r_rank, o.phone AS officer_phone, o.email AS officer_email,
+//     IFNULL(v.name, 'Not Added') AS victim_name, IFNULL(v.address, 'Not Added') AS victim_address,
+//     IFNULL(v.phone, 'Not Added') AS victim_phone, IFNULL(v.email, 'Not Added') AS victim_email,
+//     IFNULL(v.gender, 'Not Added') AS victim_gender, IFNULL(v.date_of_birth, 'Not Added') AS victim_dob,
+//     IFNULL(v.victim_pic, 'Not Added') AS victim_pic,
+//     IFNULL(s.name, 'Not Added') AS suspect_name, IFNULL(s.address, 'Not Added') AS suspect_address,
+//     IFNULL(s.phone, 'Not Added') AS suspect_phone, IFNULL(s.gender, 'Not Added') AS suspect_gender,
+//     IFNULL(s.date_of_birth, 'Not Added') AS suspect_dob, IFNULL(s.suspect_pic, 'Not Added') AS suspect_pic,
+//     IFNULL(s.known_offender, 'Not Added') AS suspect_known_offender
+// FROM CRIME c
+// LEFT JOIN OFFICER o ON c.officer_id = o.officer_id
+// LEFT JOIN VICTIM v ON c.victim_id = v.victim_id
+// LEFT JOIN SUSPECT s ON c.suspect_id = s.suspect_id
+// WHERE (c.created_by = ? OR c.officer_id = ?) AND c.status = '2313'
+// ORDER BY c.crime_date DESC;
+// ";
 
 $stmt = $conn->prepare($query);
 if (!$stmt) {

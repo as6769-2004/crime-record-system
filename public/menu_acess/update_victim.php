@@ -90,7 +90,7 @@ $allVictimsResult = $allVictimsStmt->get_result();
 </head>
 
 
-<body class="bg-dark text-light">
+<body class="bg-dark text-dark">
     <div class="container py-4">
 
         <h2 class="mb-4 text-center">Manage Victims for Case #<?= htmlspecialchars($crime['case_number']) ?>

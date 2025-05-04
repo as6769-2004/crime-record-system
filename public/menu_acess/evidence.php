@@ -1,8 +1,9 @@
 <?php
 include '../../includes/db_connect.php';
 
+// Ensure that the crime_id is valid
 $crime_id = $_GET['crime_id'] ?? 0;
-$crime_id = intval($crime_id); // Ensuring crime_id is a valid integer
+$crime_id = intval($crime_id);  // Ensuring crime_id is a valid integer
 
 // Get current timestamp
 $date_collected = date('Y-m-d H:i:s');
@@ -13,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location_found = $_POST['location_found'] ?? '';  // Using null coalescing operator
 
     // Insert evidence record into the evidence table
-    $stmt = $conn->prepare("INSERT INTO evidence (crime_id, description, location_found, created_by, date_collected) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("issss", $crime_id, $description, $location_found, $_SESSION['user_id'], $date_collected);
+    $stmt = $conn->prepare("INSERT INTO evidence (crime_id, created_by, date_collected) VALUES (?, ?, ?)");
+    $stmt->bind_param("iis", $crime_id, $_SESSION['user_id'], $date_collected);
     $stmt->execute();
 
     $evidence_id = $stmt->insert_id;  // Get the last inserted evidence_id
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 if (in_array($file_ext, $allowed_extensions)) {
                     $file_new_name = uniqid('', true) . '.' . $file_ext;
-                    $file_destination = '../../assets/files/' . $file_new_name;
+                    $file_destination = 'C:/xampp/htdocs/crime-record-system/assets/files/' . $file_new_name;
 
                     if (move_uploaded_file($file_tmp, $file_destination)) {
                         // Insert file information into evidence_file table
@@ -55,37 +56,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Delete file logic
-if (isset($_GET['delete_file_id'])) {
-    $file_id = $_GET['delete_file_id'];
+// Handle deletion of evidence file
+if (isset($_GET['delete_file_id']) && is_numeric($_GET['delete_file_id'])) {
+    $delete_file_id = intval($_GET['delete_file_id']);
+
+    // Fetch the file URL to delete the physical file
     $stmt = $conn->prepare("SELECT file_url FROM evidence_file WHERE file_id = ?");
-    $stmt->bind_param("i", $file_id);
+    $stmt->bind_param("i", $delete_file_id);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $file = $result->fetch_assoc();
-        $file_path = $file['file_url'];
+    if ($result->num_rows === 1) {
+        $file_data = $result->fetch_assoc();
+        $file_path = $file_data['file_url'];
 
-        // Delete the file from the server
-        if (unlink($file_path)) {
-            // Remove file entry from the database
-            $stmt = $conn->prepare("DELETE FROM evidence_file WHERE file_id = ?");
-            $stmt->bind_param("i", $file_id);
-            $stmt->execute();
-            echo "File deleted successfully.";
+        // Delete the database record
+        $stmt = $conn->prepare("DELETE FROM evidence_file WHERE file_id = ?");
+        $stmt->bind_param("i", $delete_file_id);
+        if ($stmt->execute()) {
+            // Attempt to delete the physical file
+            if (file_exists($file_path)) {
+                unlink($file_path);
+            }
+            echo '<div class="alert alert-success" role="alert">File deleted successfully!</div>';
         } else {
-            echo "Error deleting file.";
+            echo '<div class="alert alert-danger" role="alert">Error deleting file.</div>';
         }
-    } else {
-        echo "File not found.";
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -93,7 +95,7 @@ if (isset($_GET['delete_file_id'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color:rgb(33, 37, 41);
+            background-color: rgb(33, 37, 41);
             color: white;
         }
 
@@ -140,11 +142,9 @@ if (isset($_GET['delete_file_id'])) {
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <h2 class="mb-4">Manage Evidence for Case #<?= htmlspecialchars($crime_id) ?></h2>
-        <!-- Form for adding evidence -->
         <form action="evidence.php?crime_id=<?php echo $crime_id; ?>" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="evidence_description" class="form-label">Description</label>
@@ -164,7 +164,6 @@ if (isset($_GET['delete_file_id'])) {
             <button type="submit" class="btn btn-primary btn-upload">Submit Evidence</button>
         </form>
 
-        <!-- Displaying existing evidence files -->
         <div class="mt-4">
             <h4>Uploaded Evidence Files</h4>
             <?php
@@ -180,7 +179,7 @@ if (isset($_GET['delete_file_id'])) {
                     echo '<div class="list-group-item">';
                     echo '<p>' . htmlspecialchars($file['description']) . '</p>';
                     echo '<a href="' . htmlspecialchars($file['file_url']) . '" target="_blank" class="btn btn-outline-info">Download File</a>';
-                    echo '<form action="evidence.php" method="GET" style="display:inline;">';
+                    echo '<form action="evidence.php?crime_id=' . $crime_id . '" method="GET" style="display:inline;">';
                     echo '<input type="hidden" name="delete_file_id" value="' . htmlspecialchars($file['file_id']) . '">';
                     echo '<button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm(\'Are you sure?\')">Delete</button>';
                     echo '</form>';
@@ -196,5 +195,4 @@ if (isset($_GET['delete_file_id'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
